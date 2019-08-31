@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Build\Debug\</OutputPath>
+    <OutputPath>..\Lib\Docs\mods\Dev\PipLib\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -64,6 +64,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\AssetLoader.cs" />
+    <Compile Include="Mod\Mod.cs" />
+    <Compile Include="Mod\PrefixedId.cs" />
     <Compile Include="PipLib.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
