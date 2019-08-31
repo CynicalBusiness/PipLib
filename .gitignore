@@ -26,6 +26,10 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+[Bb]uild/
+
+# Game Libraries
+[Ll]ib/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -150,7 +154,7 @@ AutoTest.Net/
 
 # Web workbench (sass)
 .sass-cache/
-
+ 
 # Installshield output folder
 [Ee]xpress/
 
