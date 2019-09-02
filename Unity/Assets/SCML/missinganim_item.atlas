@@ -1,0 +1,34 @@
+
+missinganim_item.png
+size: 256,256
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+missinganim_item_0
+  rotate: false
+  xy: 2, 2
+  size: 56, 56
+  orig: 56, 56
+  offset: 0, 0
+  index: 0
+missinganim_item_1
+  rotate: false
+  xy: 2, 60
+  size: 66, 66
+  orig: 66, 66
+  offset: 0, 0
+  index: 0
+missinganim_item_2
+  rotate: false
+  xy: 2, 128
+  size: 76, 76
+  orig: 76, 76
+  offset: 0, 0
+  index: 0
+missinganim_item_ui
+  rotate: false
+  xy: 80, 140
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 0

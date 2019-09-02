@@ -342,3 +342,15 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+# Unity Stuff
+Unity/Temp
+Unity/Logs
+Unity/Library/cache
+Unity/Library/*Cache
+Unity/Library/metadata
+Unity/Library/ScriptAssemblies
+Unity/Assets/AssetBundles/
+Unity/Assets/AssetBundles.meta
+Unity/Assets/SCML/kparser.jar*
+Unity/Assets/SCML/*.autosave.scml

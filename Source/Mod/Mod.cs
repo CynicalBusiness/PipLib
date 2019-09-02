@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using PipLib.Assets;
+﻿using System.Collections.Generic;
+using PipLib.Asset;
+using PipLib.World;
 
 namespace PipLib.Mod
 {
@@ -16,10 +14,25 @@ namespace PipLib.Mod
             this.name = name;
         }
 
+        public abstract void Load();
+
+        public void AddElements(IEnumerable<PipElement> elements)
+        {
+            foreach (var element in elements)
+            {
+                WorldPatches.Add(element);
+            }
+        }
+
+        public void BuildKAnim(string animName)
+        {
+            AssetLoader.Get().BuildKAnim(new PrefixedId(this, animName));
+        }
+
         /**
          * Loads an asset bundle for this mod
          */
-        public int LoadAssetBundle (string bundle = AssetLoader.RESOURCE_BUNDLE_NAME)
+        public int LoadAssetBundle(string bundle)
         {
             return AssetLoader.Get().LoadBundle(this, bundle);
         }
@@ -27,10 +40,10 @@ namespace PipLib.Mod
         /**
          * Get an asset that has been loaded by name
          */
-        public T GetAsset<T> (string name) where T: UnityEngine.Object
+        public T GetAsset<T>(string name) where T : UnityEngine.Object
         {
-            AssetLoader.Get().assets.TryGetValue(new PrefixedId(this, $"{typeof(T).Name}.{name}"), out var value);
-            return value as T;
+            AssetLoader.Get().GetAsset<T>(new PrefixedId(this, name), out var asset);
+            return asset;
         }
 
         public override string ToString()
@@ -50,10 +63,38 @@ namespace PipLib.Mod
         }
     }
 
-    public class KleiBase : PipMod
+    public class BaseMod : PipMod
     {
-        public KleiBase() : base("Klei")
+
+        public const string MISSING_ANIM_NAME = "missinganim";
+        public const string MISSING_TEX_NAME = "missingtex";
+
+        public static BaseMod instance;
+
+        static BaseMod()
         {
+            instance = new BaseMod();
+        }
+
+        public BaseMod() : base("Base")
+        {
+        }
+
+        public override void Load()
+        {
+            LoadAssetBundle("piplib.assets");
+
+            // anims
+            BuildKAnim(MISSING_ANIM_NAME + AssetLoader.SUFFIX_ITEM);
+
+            // add elements
+            AddElements(new PipElement[]
+            {
+                new PipElement(this, "DebugElement")
+                    .AddSolid()
+                    // .AddBuildingOverheatModifier(1000f)
+                    // .AddBuildingDecorModifier(1f)
+            });
         }
     }
 }

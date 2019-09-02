@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace PipLib.Mod
 {
@@ -41,6 +38,16 @@ namespace PipLib.Mod
             hashCode = hashCode * -1521134295 + EqualityComparer<PipMod>.Default.GetHashCode(mod);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(id);
             return hashCode;
+        }
+    }
+
+    public abstract class PipObject
+    {
+        public readonly PrefixedId id;
+
+        public PipObject(PrefixedId id)
+        {
+            this.id = id;
         }
     }
 }

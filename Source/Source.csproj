@@ -69,6 +69,8 @@
     <Compile Include="Mod\PrefixedId.cs" />
     <Compile Include="PipLib.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="World\Element.cs" />
+    <Compile Include="World\Patches.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
@@ -76,5 +78,10 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>robocopy $(SolutionDir)Unity\Assets\AssetBundles\ $(TargetDir) *.assets /E
+exit 0</PostBuildEvent>
+  </PropertyGroup>
 </Project>

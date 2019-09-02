@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spriter_data scml_version="1.0" generator="BrashMonkey Spriter" generator_version="r11">
+    <folder id="0">
+        <file id="0" name="ui_0" width="64" height="68" pivot_x="0.494336" pivot_y="0.529779"/>
+        <file id="1" name="sand_1" width="66" height="62" pivot_x="0.502841" pivot_y="0.499395"/>
+        <file id="2" name="sand_2" width="76" height="76" pivot_x="0.51579" pivot_y="0.504934"/>
+        <file id="3" name="missinganim_item_ui_0.png" width="64" height="64" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="4" name="missinganim_item_2_0.png" width="76" height="76" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="5" name="missinganim_item_1_0.png" width="66" height="66" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="6" name="missinganim_item_0_0.png" width="56" height="56" pivot_x="0.5" pivot_y="0.5"/>
+    </folder>
+    <entity id="0" name="missinganim_item">
+        <animation id="0" name="idle1" length="132" interval="33">
+            <mainline/>
+        </animation>
+        <animation id="1" name="idle2" length="132" interval="33">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" timeline="1" key="0" z_index="0"/>
+                </key>
+                <key id="1" time="33">
+                    <object_ref id="0" timeline="0" key="0" z_index="0"/>
+                </key>
+                <key id="2" time="66">
+                    <object_ref id="0" timeline="0" key="1" z_index="0"/>
+                </key>
+                <key id="3" time="99">
+                    <object_ref id="0" timeline="0" key="2" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="resinorganicsolid_item_1_0">
+                <key id="0" time="33" spin="0">
+                    <object folder="0" file="1" angle="0" scale_y="1.000412"/>
+                </key>
+                <key id="1" time="66" spin="0">
+                    <object folder="0" file="1" angle="0" scale_y="1.000412"/>
+                </key>
+                <key id="2" time="99" spin="0">
+                    <object folder="0" file="1" angle="0" scale_y="1.000412"/>
+                </key>
+            </timeline>
+            <timeline id="1" name="missinganim_item_1_0">
+                <key id="0" spin="0">
+                    <object folder="0" file="5" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="2" name="idle3" length="132" interval="33">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" timeline="1" key="0" z_index="0"/>
+                </key>
+                <key id="1" time="33">
+                    <object_ref id="0" timeline="0" key="0" z_index="0"/>
+                </key>
+                <key id="2" time="66">
+                    <object_ref id="0" timeline="0" key="1" z_index="0"/>
+                </key>
+                <key id="3" time="99">
+                    <object_ref id="0" timeline="0" key="2" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="resinorganicsolid_item_2_0">
+                <key id="0" time="33" spin="0">
+                    <object folder="0" file="2" angle="0" scale_y="1.000412"/>
+                </key>
+                <key id="1" time="66" spin="0">
+                    <object folder="0" file="2" angle="0" scale_y="1.000412"/>
+                </key>
+                <key id="2" time="99" spin="0">
+                    <object folder="0" file="2" angle="0" scale_y="1.000412"/>
+                </key>
+            </timeline>
+            <timeline id="1" name="missinganim_item_2_0">
+                <key id="0" spin="0">
+                    <object folder="0" file="4" x="1" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="3" name="ui" length="132" interval="33">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" timeline="1" key="0" z_index="0"/>
+                </key>
+                <key id="1" time="33">
+                    <object_ref id="0" timeline="0" key="0" z_index="0"/>
+                </key>
+                <key id="2" time="66">
+                    <object_ref id="0" timeline="0" key="1" z_index="0"/>
+                </key>
+                <key id="3" time="99">
+                    <object_ref id="0" timeline="0" key="2" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="ui_0_0">
+                <key id="0" time="33" spin="0">
+                    <object folder="0" file="0" x="0.05" angle="0" scale_x="1.000519"/>
+                </key>
+                <key id="1" time="66" spin="0">
+                    <object folder="0" file="0" x="0.05" angle="0" scale_x="1.000519"/>
+                </key>
+                <key id="2" time="99" spin="0">
+                    <object folder="0" file="0" x="0.05" angle="0" scale_x="1.000519"/>
+                </key>
+            </timeline>
+            <timeline id="1" name="missinganim_item_ui_0">
+                <key id="0" spin="0">
+                    <object folder="0" file="3" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+    </entity>
+</spriter_data>
