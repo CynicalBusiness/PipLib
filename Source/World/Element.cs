@@ -25,9 +25,21 @@ namespace PipLib.World
                 case Element.State.Liquid:
                     return substanceTable.GetSubstance(SimHashes.Water).material;
                 case Element.State.Solid:
-                    return substanceTable.GetSubstance(SimHashes.SandStone).material;
                 default:
                     return substanceTable.GetSubstance(SimHashes.Unobtanium).material;
+            }
+        }
+
+        public KAnimFile GetDefaultKAnimForState(Element.State state, SubstanceTable substanceTable)
+        {
+            switch(state)
+            {
+                case Element.State.Liquid:
+                    return substanceTable.GetSubstance(SimHashes.Water).anim;
+                case Element.State.Gas:
+                    return substanceTable.GetSubstance(SimHashes.Hydrogen).anim;
+                default:
+                    return substanceTable.GetSubstance(SimHashes.Unobtanium).anim;
             }
         }
 
@@ -96,19 +108,19 @@ namespace PipLib.World
                 {
                     mat.mainTexture = tex;
                 }
-                else
+                /* else
                 {
                     Debug.LogWarning($"Missing Texture: {assetId} (was the bundle containing it loaded?)");
                     mat.mainTexture = BaseMod.instance.GetAsset<Texture2D>($"{BaseMod.MISSING_TEX_NAME}_{state.ToString().ToLower()}");
-                }
-                mat.name = $"mat{simId}";
+                } */
+                mat.name = simId + AssetLoader.SUFFIX_MATERIAL;
 
-                var anim = Assets.GetAnim(assetId + AssetLoader.SUFFIX_ITEM);
-                if (anim == null)
+                var anim = Assets.GetAnim(assetId + AssetLoader.SUFFIX_ITEM) ?? GetDefaultKAnimForState(state, substanceTable);
+                /* if (anim == null)
                 {
                     Debug.LogWarning($"Missing KAnim: {assetId} ({simId}) (was the bundle containing it loaded? has the anim been built?)");
                     anim = Assets.GetAnim(BaseMod.NAME + "_" + BaseMod.MISSING_ANIM_NAME + AssetLoader.SUFFIX_ITEM);
-                }
+                } */
 
                 Debug.Log($"** {simId} ({data.simHash})");
                 substanceList.Add(data.simHash, ModUtil.CreateSubstance(
@@ -131,7 +143,7 @@ namespace PipLib.World
             string descStr = GetStringID(state, "desc");
 
             Strings.Add(nameStr, name ?? simId);
-            Strings.Add(descStr, $"{STRINGS.UI.FormatAsLink(name ?? id.ToString(), simId)} in a {STRINGS.UI.FormatAsLink(state.ToString(), "ELEMENTS"+state.ToString())} state.\n\n{desc ?? ""}".Trim());
+            Strings.Add(descStr, $"{STRINGS.UI.FormatAsLink(name ?? id.ToString(), simId)} in a {STRINGS.UI.FormatAsLink(state.ToString(), "ELEMENTS" + state.ToString())} state.\n\n{desc ?? ""}".Trim());
 
             Debug.Log($"Added Strings for {simId} ({Strings.Get(nameStr)}): {Strings.Get(descStr).ToString().Replace("\n", "\\n")}");
         }
@@ -193,8 +205,7 @@ namespace PipLib.World
             }
             catch (KAnimComponentMissingException ex)
             {
-                Debug.LogWarning($"Failed loading {simId} KAnim");
-                Debug.LogException(ex);
+                Debug.LogWarning($"Failed loading {simId} KAnim: " + ex.Message);
             }
             states.Add(state, new PipElementState()
             {
@@ -214,6 +225,16 @@ namespace PipLib.World
         public PipElement AddSolid(Color32? color = null)
         {
             return AddState(Element.State.Solid, color == null ? DEFAULT_COLOR : (Color32)color);
+        }
+
+        public PipElement AddLiquid(Color32 color, Color32? colorUi = null, Color32? colorConduit = null)
+        {
+            return AddState(Element.State.Liquid, color, colorUi, colorConduit);
+        }
+
+        public PipElement AddGas(Color32 color, Color32? colorUi = null, Color32? colorConduit = null)
+        {
+            return AddState(Element.State.Gas, color, colorUi, colorConduit);
         }
 
         // TODO liquids and gasses

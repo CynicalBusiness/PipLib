@@ -93,6 +93,7 @@ namespace PipLib.Mod
             {
                 new PipElement(this, "DebugElement"){ name = "Debug Element", desc = "Internal debugging element for PipLib. Not intended for normal gameplay." }
                     .AddSolid()
+                    .AddLiquid(new UnityEngine.Color32(255, 80, 255, 255))
                     .AddBuildingOverheatModifier(1000f)
                     .AddBuildingDecorModifier(1f)
             });
