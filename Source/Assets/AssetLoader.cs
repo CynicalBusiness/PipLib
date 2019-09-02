@@ -62,7 +62,7 @@ namespace PipLib.Asset
             {
                 textures.Add(tex);
             }
-            var kanim = ModUtil.AddKAnim(id.id, anim, build, textures);
+            var kanim = ModUtil.AddKAnim($"{id.mod.name.ToLower()}_{id.id}", anim, build, textures);
             Debug.Log($"Built KAnimFile '{kanim.name}' with {kanim.textures.Count} texture(s)");
 
             return kanim;

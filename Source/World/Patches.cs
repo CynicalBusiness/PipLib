@@ -33,7 +33,6 @@ namespace PipLib.World
         {
             foreach (var e in elements)
             {
-                e.RegisterStrings();
                 e.RegisterSimHashes(simHashTable, simHashReverseTable);
             }
         }

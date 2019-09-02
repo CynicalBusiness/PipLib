@@ -63,7 +63,7 @@ namespace PipLib.World
 
         public string StringsId(Element.State state)
         {
-            return $"{id}.{state}".ToUpper();
+            return $"{id.mod.name}{id.id}{state}".ToUpper();
         }
 
         public Dictionary<Element.State, PipElementState>.KeyCollection States => states.Keys;
@@ -106,8 +106,8 @@ namespace PipLib.World
                 var anim = Assets.GetAnim(assetId + AssetLoader.SUFFIX_ITEM);
                 if (anim == null)
                 {
-                    Debug.LogWarning($"Missing KAnim: {assetId} ({simId}) (was the bundle containing it loaded and the anim was built?)");
-                    anim = Assets.GetAnim(BaseMod.MISSING_ANIM_NAME + AssetLoader.SUFFIX_ITEM);
+                    Debug.LogWarning($"Missing KAnim: {assetId} ({simId}) (was the bundle containing it loaded? has the anim been built?)");
+                    anim = Assets.GetAnim(BaseMod.NAME + "_" + BaseMod.MISSING_ANIM_NAME + AssetLoader.SUFFIX_ITEM);
                 }
 
                 Debug.Log($"** {simId} ({data.simHash})");
@@ -123,17 +123,17 @@ namespace PipLib.World
             }
         }
 
-        internal void RegisterStrings()
+        internal void RegisterStrings(Element.State state)
         {
-            foreach (var e in states)
-            {
-                var state = e.Key;
-                string simId = SimId(state);
-                string stringsId = StringsId(state);
+            string simId = SimId(state);
 
-                Strings.Add($"STRINGS.ELEMENTS.{stringsId}.NAME", name ?? id.ToString());
-                Strings.Add($"STRINGS.ELEMENTS.{stringsId}.DESC", $"{state} form of {STRINGS.UI.FormatAsLink(name, simId)}.\n\n{desc ?? ""}".Trim());
-            }
+            string nameStr = GetStringID(state, "name");
+            string descStr = GetStringID(state, "desc");
+
+            Strings.Add(nameStr, name ?? simId);
+            Strings.Add(descStr, $"{STRINGS.UI.FormatAsLink(name ?? id.ToString(), simId)} in a {STRINGS.UI.FormatAsLink(state.ToString(), "Solids")} state.\n\n{desc ?? ""}".Trim());
+
+            Debug.Log($"Added Strings for {simId} ({Strings.Get(nameStr)}): {Strings.Get(descStr).ToString().Replace("\n", "\\n")}");
         }
 
         internal void RegisterAttributes()
@@ -156,11 +156,15 @@ namespace PipLib.World
             }
         }
 
+        public string GetStringID(Element.State state, string suffix)
+        {
+            return $"STRINGS.ELEMENTS.{StringsId(state)}.{suffix.ToUpper()}";
+        }
+
         public bool TryGetState(Element.State state, out PipElementState materialState)
         {
             return states.TryGetValue(state, out materialState);
         }
-
 
         public PipElement AddState(Element.State state, Color32 color, Color32? colorUi = null, Color32? colorConduit = null)
         {
@@ -202,6 +206,7 @@ namespace PipLib.World
                 colorUi = (Color32)colorUi,
                 colorConduit = (Color32)colorConduit
             });
+            RegisterStrings(state);
 
             return this;
         }

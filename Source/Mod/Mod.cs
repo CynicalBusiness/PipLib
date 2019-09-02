@@ -65,6 +65,7 @@ namespace PipLib.Mod
 
     public class BaseMod : PipMod
     {
+        public const string NAME = "Base";
 
         public const string MISSING_ANIM_NAME = "missinganim";
         public const string MISSING_TEX_NAME = "missingtex";
@@ -76,7 +77,7 @@ namespace PipLib.Mod
             instance = new BaseMod();
         }
 
-        public BaseMod() : base("Base")
+        public BaseMod() : base(NAME)
         {
         }
 
@@ -90,11 +91,13 @@ namespace PipLib.Mod
             // add elements
             AddElements(new PipElement[]
             {
-                new PipElement(this, "DebugElement")
+                new PipElement(this, "DebugElement"){ name = "Debug Element", desc = "Internal debugging element for PipLib. Not intended for normal gameplay." }
                     .AddSolid()
                     // .AddBuildingOverheatModifier(1000f)
                     // .AddBuildingDecorModifier(1f)
             });
+
+            Debug.Log(Strings.Get("STRINGS.ELEMENTS.SOLIDHYDROGEN.DESC"));
         }
     }
 }

@@ -20,4 +20,4 @@
     buildMenuSort: 1
     isDisabled: false
     state: Solid
-    localizationID: STRINGS.ELEMENTS.BASE.DEBUGELEMENT.SOLID.NAME
+    localizationID: STRINGS.ELEMENTS.BASEDEBUGELEMENTSOLID.NAME
