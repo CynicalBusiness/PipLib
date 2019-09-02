@@ -38,7 +38,7 @@ namespace PipLib.World
             public Element.State state;
             public PipElement material;
             public SimHashes simHash;
-            public List<AttributeModifier> attributeModifiers;
+            public List<Func<AttributeModifier>> attributeModifiers;
             public Color32 color;
             public Color32 colorUi;
             public Color32 colorConduit;
@@ -131,7 +131,7 @@ namespace PipLib.World
             string descStr = GetStringID(state, "desc");
 
             Strings.Add(nameStr, name ?? simId);
-            Strings.Add(descStr, $"{STRINGS.UI.FormatAsLink(name ?? id.ToString(), simId)} in a {STRINGS.UI.FormatAsLink(state.ToString(), "Solids")} state.\n\n{desc ?? ""}".Trim());
+            Strings.Add(descStr, $"{STRINGS.UI.FormatAsLink(name ?? id.ToString(), simId)} in a {STRINGS.UI.FormatAsLink(state.ToString(), "ELEMENTS"+state.ToString())} state.\n\n{desc ?? ""}".Trim());
 
             Debug.Log($"Added Strings for {simId} ({Strings.Get(nameStr)}): {Strings.Get(descStr).ToString().Replace("\n", "\\n")}");
         }
@@ -146,7 +146,7 @@ namespace PipLib.World
                     var element = ElementLoader.FindElementByHash(data.simHash);
                     if (element != null)
                     {
-                        element.attributeModifiers.AddRange(data.attributeModifiers);
+                        element.attributeModifiers.AddRange(data.attributeModifiers.ConvertAll(a => a.Invoke()));
                     }
                     else
                     {
@@ -201,7 +201,7 @@ namespace PipLib.World
                 state = state,
                 material = this,
                 simHash = (SimHashes)Hash.SDBMLower(simId),
-                attributeModifiers = new List<AttributeModifier>(),
+                attributeModifiers = new List<Func<AttributeModifier>>(),
                 color = color,
                 colorUi = (Color32)colorUi,
                 colorConduit = (Color32)colorConduit
@@ -218,7 +218,8 @@ namespace PipLib.World
 
         // TODO liquids and gasses
 
-        public PipElement AddAttribute(Element.State state, AttributeModifier attribute)
+        // this is a function instead of a normal argument, because calling Db.Get() early breaks things
+        public PipElement AddAttribute(Element.State state, Func<AttributeModifier> attribute)
         {
             if (TryGetState(state, out var data))
             {
@@ -226,24 +227,19 @@ namespace PipLib.World
             }
             else
             {
-                Debug.LogWarning($"{this.id} tried to add attribute {attribute.AttributeId} before state was added");
+                Debug.LogWarning($"{this.id} tried to add attribute to the {state} state before the state was added");
             }
             return this;
         }
 
-        public PipElement AddAttribute(Element.State state, string attributeId, float value, Func<string> desc, bool isMultiplier = false, bool isUiOnly = false)
-        {
-            return AddAttribute(state, new AttributeModifier(attributeId, value, desc, isMultiplier, isUiOnly));
-        }
-
         public PipElement AddBuildingDecorModifier(float val, bool isMultiplier = true)
         {
-            return AddAttribute(Element.State.Solid, Db.Get().BuildingAttributes.Decor.Id, val, null, isMultiplier, false);
+            return AddAttribute(Element.State.Solid, () => new AttributeModifier(Db.Get().BuildingAttributes.Decor.Id, val, null, isMultiplier, false));
         }
 
         public PipElement AddBuildingOverheatModifier(float val, bool isMultiplier = false)
         {
-            return AddAttribute(Element.State.Solid, Db.Get().BuildingAttributes.OverheatTemperature.Id, val, null, isMultiplier, false);
+            return AddAttribute(Element.State.Solid, () => new AttributeModifier(Db.Get().BuildingAttributes.OverheatTemperature.Id, val, null, isMultiplier, false));
         }
 
         public override string ToString()

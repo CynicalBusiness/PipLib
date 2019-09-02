@@ -93,11 +93,9 @@ namespace PipLib.Mod
             {
                 new PipElement(this, "DebugElement"){ name = "Debug Element", desc = "Internal debugging element for PipLib. Not intended for normal gameplay." }
                     .AddSolid()
-                    // .AddBuildingOverheatModifier(1000f)
-                    // .AddBuildingDecorModifier(1f)
+                    .AddBuildingOverheatModifier(1000f)
+                    .AddBuildingDecorModifier(1f)
             });
-
-            Debug.Log(Strings.Get("STRINGS.ELEMENTS.SOLIDHYDROGEN.DESC"));
         }
     }
 }
