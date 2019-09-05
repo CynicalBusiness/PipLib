@@ -76,13 +76,13 @@ namespace PipLib.World
         public PipElement(PipMod mod, string id) : base(new PrefixedId(mod, id)) { }
 
         /// <summary>
-        /// Gets the Simulation ID (formatted <c>Prefix_ElementName_State</c>) for this <see cref="PipElement"/>.
+        /// Gets the Simulation ID (formatted <c>PrefixElementNameState</c>) for this <see cref="PipElement"/>.
         /// </summary>
         /// <param name="state">The state</param>
         /// <returns>The Simulation Id</returns>
         public string SimId(Element.State state)
         {
-            return $"{id.mod.prefix}_{id.id}_{state}";
+            return $"{id.mod.prefix}{id.id}{state}";
         }
 
         /// <summary>
@@ -92,11 +92,11 @@ namespace PipLib.World
         /// <returns>The Asset ID</returns>
         public string AssetId(Element.State state)
         {
-            return SimId(state).ToLower();
+            return $"{id.mod.prefix}_{id.id}_{state}".ToLower();
         }
 
         /// <summary>
-        /// Gets the Strings ID (formatted <c>PREFIX_ELEMENTNAME_STATE</c>) for this <see cref="PipElement"/>.
+        /// Gets the Strings ID (formatted <c>PREFIXELEMENTNAMESTATE</c>) for this <see cref="PipElement"/>.
         /// </summary>
         /// <param name="state">The state</param>
         /// <returns>The Strings ID</returns>
