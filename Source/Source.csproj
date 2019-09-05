@@ -1,6 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup Label="UserMacros">
+    <GameProgramDir>$(MSBuildProgramFiles32)\Steam\steamapps\common\OxygenNotIncluded</GameProgramDir>
+    <GameConfigDir>$(USERPROFILE)\Documents\Klei\OxygenNotIncluded</GameConfigDir>
+    <GameProgramDataDir>$(GameProgramDir)\OxygenNotIncluded_Data</GameProgramDataDir>
+    <LibDir>lib</LibDir>
+    <LibDataDir>$(LibDir)\Data</LibDataDir>
+    <LibConfigDir>$(LibDir)\Config</LibConfigDir>
+  </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -19,7 +27,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Lib\Docs\mods\Dev\PipLib\</OutputPath>
+    <OutputPath>$(LibConfigDir)\mods\Dev\$(AssemblyName)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -32,14 +40,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Label="UserMacros">
-    <GameProgramDir>$(MSBuildProgramFiles32)\Steam\steamapps\common\OxygenNotIncluded</GameProgramDir>
-    <GameConfigDir>$(USERPROFILE)\Documents\Klei\OxygenNotIncluded</GameConfigDir>
-    <GameProgramDataDir>$(GameProgramDir)\OxygenNotIncluded_Data</GameProgramDataDir>
-    <LibDir>lib</LibDir>
-    <LibDataDir>$(LibDir)\Data</LibDataDir>
-    <LibConfigDir>$(LibDir)\Config</LibConfigDir>
   </PropertyGroup>
   <Target Name="SetupLib">
     <MakeDir Directories="$(LibDir)" />

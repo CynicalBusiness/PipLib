@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Source", "Source\Source.csproj", "{37F52272-F162-40A1-BA1F-681D21420A45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Unity\Assembly-CSharp-Editor.csproj", "{6311E6C6-0A20-383B-320B-694068DE37A5}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleMod", "ExampleMod\ExampleMod.csproj", "{5CF7C35D-2DDA-42D4-9CFB-CCE39B5EBB5F}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{37F52272-F162-40A1-BA1F-681D21420A45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37F52272-F162-40A1-BA1F-681D21420A45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37F52272-F162-40A1-BA1F-681D21420A45}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6311E6C6-0A20-383B-320B-694068DE37A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6311E6C6-0A20-383B-320B-694068DE37A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6311E6C6-0A20-383B-320B-694068DE37A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6311E6C6-0A20-383B-320B-694068DE37A5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5CF7C35D-2DDA-42D4-9CFB-CCE39B5EBB5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5CF7C35D-2DDA-42D4-9CFB-CCE39B5EBB5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CF7C35D-2DDA-42D4-9CFB-CCE39B5EBB5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
