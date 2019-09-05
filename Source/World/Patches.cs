@@ -2,36 +2,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using Harmony;
+using PipLib.Mod;
 using Klei;
 using PipLib.Asset;
-using PipLib.Mod;
-using UnityEngine;
+using System.IO;
 
 namespace PipLib.World
 {
     public class WorldPatches
     {
 
-        private static readonly List<PipElement> elements = new List<PipElement>();
-
         public static Dictionary<SimHashes, string> simHashTable = new Dictionary<SimHashes, string>();
         public static Dictionary<string, object> simHashReverseTable = new Dictionary<string, object>();
 
-        public static void Add<T>(T obj) where T : PipObject
+        public static void RegisterAll(PipMod mod)
         {
-            if (typeof(PipElement).IsAssignableFrom(typeof(T)))
-            {
-                elements.Add(obj as PipElement);
-            }
-            else
-            {
-                throw new UnknownPipObjectException(obj);
-            }
-        }
-
-        public static void RegisterAll()
-        {
-            foreach (var e in elements)
+            foreach (var e in mod.elements)
             {
                 e.RegisterSimHashes(simHashTable, simHashReverseTable);
             }
@@ -44,11 +30,15 @@ namespace PipLib.World
             private static void Postfix()
             {
                 Debug.Log("Applying substance attributes...");
-                foreach (var m in elements)
+                foreach (var mod in PipLib.mods)
                 {
-                    Debug.Log($"* {m.id}");
-                    m.RegisterAttributes();
+                    foreach (var e in mod.elements)
+                    {
+                        Debug.Log($"* {e.id}");
+                        e.RegisterAttributes();
+                    }
                 }
+
                 Debug.Log("Done applying attributes");
             }
         }
@@ -85,7 +75,6 @@ namespace PipLib.World
             }
         }
 
-        // TODO move this elselwere?
         [HarmonyPatch(typeof(ElementLoader))]
         [HarmonyPatch(nameof(ElementLoader.CollectElementsFromYAML))]
         internal static class ElementLoader_CollectElementsFromYAML_Patch
@@ -95,12 +84,21 @@ namespace PipLib.World
                 Debug.Log("Injecting elements...");
                 foreach (var mod in PipLib.mods)
                 {
-                    var loaded = YamlIO.Parse<ElementLoader.ElementEntryCollection>(mod.GetAsset<TextAsset>(AssetLoader.ELEMENTS).text, null);
+                    var pooledList = ListPool<FileHandle, ElementLoader>.Allocate();
+                    FileSystem.GetFiles(FileSystem.Normalize(AssetLoader.GetAssemblyDirectory(mod) + "/element"), "*.yaml", pooledList);
+                    foreach (var file in pooledList)
+                    {
+                        Debug.Log(file.full_path);
+                        var elementCollection = YamlIO.Parse<ElementLoader.ElementEntryCollection>(File.ReadAllText(file.full_path), Path.GetFileName(file.full_path));
+                        if (elementCollection != null) __result.AddRange(elementCollection.elements);
+                    }
+                    pooledList.Recycle();
+                    /* var loaded = YamlIO.Parse<ElementLoader.ElementEntryCollection>(mod.GetAsset<TextAsset>(AssetLoader.ELEMENTS).text, null);
                     foreach (var e in loaded.elements)
                     {
                         Debug.Log($"* {e.elementId}");
                         __result.Add(e);
-                    }
+                    } */
                 }
                 Debug.Log("Done injecting.");
             }
@@ -117,9 +115,9 @@ namespace PipLib.World
                 Debug.Log("Updating KAnims...");
                 // annoyingly, all of the included KAnim methods, namely ModUtil.AddKAnim, are late to the party
                 // so we have to update the anim table again
-                var animTable = Traverse.Create(typeof(Assets)).Field("AnimTable").GetValue<Dictionary<HashedString, KAnimFile>>();
+                /* var animTable = Traverse.Create(typeof(Assets)).Field("AnimTable").GetValue<Dictionary<HashedString, KAnimFile>>();
                 animTable.Clear();
-                Assets.Anims.AddRange(Assets.ModLoadedKAnims);
+                // Assets.Anims.AddRange(Assets.ModLoadedKAnims);
                 foreach (var anim in Assets.Anims)
                 {
                     if (anim != null)
@@ -133,23 +131,26 @@ namespace PipLib.World
                             Debug.LogWarning("Tried to add already added anim: " + anim.name);
                         }
                     }
-                }
+                } */
 
                 Debug.Log("Registering substances...");
                 int numElements = 0, numSubstances = 0;
-                foreach (var e in elements)
+                foreach (var mod in PipLib.mods)
                 {
-                    var states = e.States;
-                    if (states.Count > 0)
+                    foreach (var e in mod.elements)
                     {
-                        Debug.Log($"* {e}");
-                        e.RegisterSubstances(substanceList, substanceTable);
-                        numElements++;
-                        numSubstances += states.Count;
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"{e.id} has no states");
+                        var states = e.States;
+                        if (states.Count > 0)
+                        {
+                            Debug.Log($"* {e}");
+                            e.RegisterSubstances(substanceList, substanceTable);
+                            numElements++;
+                            numSubstances += states.Count;
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"{e.id} has no states");
+                        }
                     }
                 }
 

@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,17 +33,30 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Label="UserMacros">
+    <GameProgramDir>$(MSBuildProgramFiles32)\Steam\steamapps\common\OxygenNotIncluded</GameProgramDir>
+    <GameConfigDir>$(USERPROFILE)\Documents\Klei\OxygenNotIncluded</GameConfigDir>
+    <GameProgramDataDir>$(GameProgramDir)\OxygenNotIncluded_Data</GameProgramDataDir>
+    <LibDir>lib</LibDir>
+    <LibDataDir>$(LibDir)\Data</LibDataDir>
+    <LibConfigDir>$(LibDir)\Config</LibConfigDir>
+  </PropertyGroup>
+  <Target Name="SetupLib">
+    <MakeDir Directories="$(LibDir)" />
+    <Exec Condition="!Exists('$(LibDataDir)')" Command="mklink /J &quot;$(LibDataDir)&quot; &quot;$(GameProgramDataDir)&quot;" />
+    <Exec Condition="!Exists('$(LibConfigDir)')" Command="mklink /J &quot;$(LibConfigDir)&quot; &quot;$(GameConfigDir)&quot;" />
+  </Target>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\Lib\Data\Managed\0Harmony.dll</HintPath>
+      <HintPath>$(LibDataDir)\Managed\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\Lib\Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>$(LibDataDir)\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\Lib\Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>$(LibDataDir)\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -51,15 +66,15 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>..\Lib\Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>$(LibDataDir)\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>..\Lib\Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>$(LibDataDir)\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\Lib\Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(LibDataDir)\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -74,14 +89,31 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
+    <None Include="element\debug.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>robocopy $(SolutionDir)Unity\Assets\AssetBundles\ $(TargetDir) *.assets /E
-exit 0</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\MSBuild.Extension.Pack.1.9.1\build\net35\MSBuild.Extension.Pack.targets" Condition="Exists('..\packages\MSBuild.Extension.Pack.1.9.1\build\net35\MSBuild.Extension.Pack.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\MSBuild.Extension.Pack.1.9.1\build\net35\MSBuild.Extension.Pack.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSBuild.Extension.Pack.1.9.1\build\net35\MSBuild.Extension.Pack.targets'))" />
+  </Target>
+  <Target Name="BeforeBuild">
+    <ItemGroup>
+      <AssemblyInfoFiles Include="Properties\AssemblyInfo.cs" />
+    </ItemGroup>
+    <Message Text="Built" />
+    <MSBuild.ExtensionPack.Framework.AssemblyInfo AssemblyInfoFiles="@(AssemblyInfoFiles)" AssemblyBuildNumberType="YearWeekDay" FirstDayOfWeek="Sunday" AssemblyFileBuildNumberType="YearWeekDay" AssemblyFileRevisionType="AutoIncrement" />
+  </Target>
 </Project>

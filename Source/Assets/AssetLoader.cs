@@ -21,7 +21,7 @@ namespace PipLib.Asset
         public const string SUFFIX_ITEM = "_item";
 
         public const string SUFFIX_BUILD = "_build";
-        public const string SUFFIX_ANIM = "_anim";
+        public const string SUFFIX_ANIM = "_kanim";
 
         public static string GetAssemblyDirectory(PipMod mod)
         {
@@ -45,7 +45,8 @@ namespace PipLib.Asset
 
         public readonly Dictionary<PrefixedId, UnityEngine.Object> assets = new Dictionary<PrefixedId, UnityEngine.Object>();
 
-        public KAnimFile BuildKAnim(PrefixedId id)
+        // Obsoleted
+        /* public KAnimFile BuildKAnim(PrefixedId id)
         {
             if (!GetAsset<TextAsset>(new PrefixedId(id.mod, id.id + SUFFIX_ANIM), out var anim))
             {
@@ -66,7 +67,7 @@ namespace PipLib.Asset
             Debug.Log($"Built KAnimFile '{kanim.name}' with {kanim.textures.Count} texture(s)");
 
             return kanim;
-        }
+        } */
 
         /**
          * Loads an asset bundle into this loader

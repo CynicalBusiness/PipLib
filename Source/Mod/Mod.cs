@@ -6,8 +6,9 @@ namespace PipLib.Mod
 {
     public abstract class PipMod
     {
-
         public readonly string name;
+
+        protected internal readonly List<PipElement> elements = new List<PipElement>();
 
         public PipMod(string name)
         {
@@ -20,14 +21,15 @@ namespace PipLib.Mod
         {
             foreach (var element in elements)
             {
-                WorldPatches.Add(element);
+                this.elements.Add(element);
             }
         }
 
-        public void BuildKAnim(string animName)
+        // Obsoleted
+        /* public void BuildKAnim(string animName)
         {
             AssetLoader.Get().BuildKAnim(new PrefixedId(this, animName));
-        }
+        } */
 
         /**
          * Loads an asset bundle for this mod
@@ -72,6 +74,11 @@ namespace PipLib.Mod
 
         public static BaseMod instance;
 
+        public static void OnLoad()
+        {
+            PipLib.LoadMod(BaseMod.instance);
+        }
+
         static BaseMod()
         {
             instance = new BaseMod();
@@ -83,17 +90,17 @@ namespace PipLib.Mod
 
         public override void Load()
         {
-            LoadAssetBundle("piplib.assets");
-
-            // anims
-            BuildKAnim(MISSING_ANIM_NAME + AssetLoader.SUFFIX_ITEM);
-
             // add elements
             AddElements(new PipElement[]
             {
-                new PipElement(this, "DebugElement"){ name = "Debug Element", desc = "Internal debugging element for PipLib. Not intended for normal gameplay." }
+                new PipElement(this, "DebugElement"){
+                    name = "Debug Element",
+                    desc = "Internal debugging element for PipLib. Not intended for normal gameplay.",
+                    baseColor = new UnityEngine.Color32(255, 80, 255, 255)
+                }
                     .AddSolid()
-                    .AddLiquid(new UnityEngine.Color32(255, 80, 255, 255))
+                    .AddLiquid()
+                    .AddGas()
                     .AddBuildingOverheatModifier(1000f)
                     .AddBuildingDecorModifier(1f)
             });

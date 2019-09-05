@@ -12,26 +12,23 @@ namespace PipLib
 
         public static void OnLoad()
         {
-            // worried about race conditions here
 
-            mods.Add(BaseMod.instance);
-            // TODO find a dynamic way to do this
+        }
 
-            Debug.Log($"Found {mods.Count} mod(s)");
-            foreach (var m in mods)
+        public static void LoadMod(PipMod mod)
+        {
+            try
             {
-                try
-                {
-                    Debug.Log($"Loading: {m.name} ({m.GetType().FullName})");
-                    m.Load();
-                }
-                catch (Exception err)
-                {
-                    Debug.LogWarning($"Failed to load {m.GetType().FullName}");
-                    Debug.LogException(err);
-                }
+                Debug.Log($"Loading: {mod.name} ({mod.GetType().FullName})");
+                mod.Load();
+                WorldPatches.RegisterAll(mod);
+                mods.Add(mod);
             }
-            WorldPatches.RegisterAll();
+            catch (Exception err)
+            {
+                Debug.LogWarning($"Failed to load {mod.GetType().FullName}");
+                Debug.LogException(err);
+            }
         }
     }
 }

@@ -11,6 +11,8 @@ namespace PipLib.World
     public class PipElement : PipObject
     {
 
+        public static readonly Color32 WHITE = new Color32(255, 255, 255, 255);
+
         /**
          * Gets the base engine material for a given substance state
          */
@@ -21,7 +23,7 @@ namespace PipLib.World
                 case Element.State.Vacuum:
                     return substanceTable.GetSubstance(SimHashes.Vacuum).material;
                 case Element.State.Gas:
-                    return substanceTable.GetSubstance(SimHashes.Hydrogen).material;
+                    return substanceTable.GetSubstance(SimHashes.Oxygen).material;
                 case Element.State.Liquid:
                     return substanceTable.GetSubstance(SimHashes.Water).material;
                 case Element.State.Solid:
@@ -32,7 +34,7 @@ namespace PipLib.World
 
         public KAnimFile GetDefaultKAnimForState(Element.State state, SubstanceTable substanceTable)
         {
-            switch(state)
+            switch (state)
             {
                 case Element.State.Liquid:
                     return substanceTable.GetSubstance(SimHashes.Water).anim;
@@ -58,6 +60,7 @@ namespace PipLib.World
 
         public string name;
         public string desc;
+        public Color32 baseColor = WHITE;
 
         private readonly Dictionary<Element.State, PipElementState> states = new Dictionary<Element.State, PipElementState>();
 
@@ -103,17 +106,22 @@ namespace PipLib.World
                 string assetId = AssetId(state);
 
                 var tex = id.mod.GetAsset<Texture2D>(assetId);
-                var mat = new Material(GetBaseMaterialForState(state, substanceTable));
-                if (tex != null)
+                var baseMaterial = GetBaseMaterialForState(state, substanceTable);
+                Material mat = null;
+                if (baseMaterial != null)
                 {
-                    mat.mainTexture = tex;
+                    mat = new Material(baseMaterial);
+                    if (tex != null)
+                    {
+                        mat.mainTexture = tex;
+                    }
+                    /* else
+                    {
+                        Debug.LogWarning($"Missing Texture: {assetId} (was the bundle containing it loaded?)");
+                        mat.mainTexture = BaseMod.instance.GetAsset<Texture2D>($"{BaseMod.MISSING_TEX_NAME}_{state.ToString().ToLower()}");
+                    } */
+                    mat.name = simId + AssetLoader.SUFFIX_MATERIAL;
                 }
-                /* else
-                {
-                    Debug.LogWarning($"Missing Texture: {assetId} (was the bundle containing it loaded?)");
-                    mat.mainTexture = BaseMod.instance.GetAsset<Texture2D>($"{BaseMod.MISSING_TEX_NAME}_{state.ToString().ToLower()}");
-                } */
-                mat.name = simId + AssetLoader.SUFFIX_MATERIAL;
 
                 var anim = Assets.GetAnim(assetId + AssetLoader.SUFFIX_ITEM) ?? GetDefaultKAnimForState(state, substanceTable);
                 /* if (anim == null)
@@ -178,16 +186,17 @@ namespace PipLib.World
             return states.TryGetValue(state, out materialState);
         }
 
-        public PipElement AddState(Element.State state, Color32 color, Color32? colorUi = null, Color32? colorConduit = null)
+        public PipElement AddState(Element.State state, Color32? stateColor, Color32? colorUi = null, Color32? colorConduit = null)
         {
             if (states.ContainsKey(state))
             {
-                Debug.LogWarning($"{this.id} tried to declare multiple substances for state: {state}");
+                Debug.LogWarning($"{id} tried to declare multiple substances for state: {state}");
                 return this;
             }
 
             string simId = SimId(state);
-            string assetId = AssetId(state);
+
+            var color = stateColor ?? baseColor;
 
             if (colorUi == null)
             {
@@ -199,14 +208,16 @@ namespace PipLib.World
                 colorConduit = color;
             }
 
-            try
+            // Obsoleted
+            /* try
             {
                 id.mod.BuildKAnim(assetId + AssetLoader.SUFFIX_ITEM);
             }
             catch (KAnimComponentMissingException ex)
             {
                 Debug.LogWarning($"Failed loading {simId} KAnim: " + ex.Message);
-            }
+            } */
+
             states.Add(state, new PipElementState()
             {
                 state = state,
@@ -222,19 +233,19 @@ namespace PipLib.World
             return this;
         }
 
-        public PipElement AddSolid(Color32? color = null)
+        public PipElement AddSolid(Color32? stateColor = null)
         {
-            return AddState(Element.State.Solid, color == null ? DEFAULT_COLOR : (Color32)color);
+            return AddState(Element.State.Solid, stateColor);
         }
 
-        public PipElement AddLiquid(Color32 color, Color32? colorUi = null, Color32? colorConduit = null)
+        public PipElement AddLiquid(Color32? stateColor = null, Color32? colorUi = null, Color32? colorConduit = null)
         {
-            return AddState(Element.State.Liquid, color, colorUi, colorConduit);
+            return AddState(Element.State.Liquid, stateColor, colorUi, colorConduit);
         }
 
-        public PipElement AddGas(Color32 color, Color32? colorUi = null, Color32? colorConduit = null)
+        public PipElement AddGas(Color32? stateColor = null, Color32? colorUi = null, Color32? colorConduit = null)
         {
-            return AddState(Element.State.Gas, color, colorUi, colorConduit);
+            return AddState(Element.State.Gas, stateColor, colorUi, colorConduit);
         }
 
         // TODO liquids and gasses
@@ -248,7 +259,7 @@ namespace PipLib.World
             }
             else
             {
-                Debug.LogWarning($"{this.id} tried to add attribute to the {state} state before the state was added");
+                Debug.LogWarning($"{id} tried to add attribute to the {state} state before the state was added");
             }
             return this;
         }
