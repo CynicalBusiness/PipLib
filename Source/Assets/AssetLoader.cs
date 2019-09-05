@@ -23,6 +23,11 @@ namespace PipLib.Asset
         public const string SUFFIX_BUILD = "_build";
         public const string SUFFIX_ANIM = "_kanim";
 
+        /// <summary>
+        /// Gets the directory of the assembly the given mod is in
+        /// </summary>
+        /// <param name="mod">The mod to get</param>
+        /// <returns>The fully directory path to the assembly</returns>
         public static string GetAssemblyDirectory(PipMod mod)
         {
             return Path.GetDirectoryName(Assembly.GetAssembly(mod.GetType()).Location);
@@ -45,33 +50,12 @@ namespace PipLib.Asset
 
         public readonly Dictionary<PrefixedId, UnityEngine.Object> assets = new Dictionary<PrefixedId, UnityEngine.Object>();
 
-        // Obsoleted
-        /* public KAnimFile BuildKAnim(PrefixedId id)
-        {
-            if (!GetAsset<TextAsset>(new PrefixedId(id.mod, id.id + SUFFIX_ANIM), out var anim))
-            {
-                throw new KAnimComponentMissingException(id, "anim");
-            }
-            if (!GetAsset<TextAsset>(new PrefixedId(id.mod, id.id + SUFFIX_BUILD), out var build))
-            {
-                throw new KAnimComponentMissingException(id, "build");
-            }
-
-            int texIndex = 0;
-            var textures = new List<Texture2D>();
-            while (GetAsset(new PrefixedId(id.mod, $"{id.id}_{texIndex++}"), out Texture2D tex))
-            {
-                textures.Add(tex);
-            }
-            var kanim = ModUtil.AddKAnim($"{id.mod.name.ToLower()}_{id.id}", anim, build, textures);
-            Debug.Log($"Built KAnimFile '{kanim.name}' with {kanim.textures.Count} texture(s)");
-
-            return kanim;
-        } */
-
-        /**
-         * Loads an asset bundle into this loader
-         */
+        /// <summary>
+        /// Loads a bundle into this asset loader
+        /// </summary>
+        /// <param name="mod">The mod that owns the bundle</param>
+        /// <param name="bundle">The name of the bundle</param>
+        /// <returns>The number of assets loaded</returns>
         public int LoadBundle(PipMod mod, string bundle = RESOURCE_BUNDLE_NAME)
         {
             Debug.Log($"Loading bundle '{bundle}' for ${mod}");
@@ -98,6 +82,13 @@ namespace PipLib.Asset
             return count;
         }
 
+        /// <summary>
+        /// Gets an asset from this bundle
+        /// </summary>
+        /// <typeparam name="T">The type of asset to get</typeparam>
+        /// <param name="id">The ID of the asset</param>
+        /// <param name="value">The value to assign the asset to</param>
+        /// <returns>Whether or not the asset was found</returns>
         public bool GetAsset<T>(PrefixedId id, out T value) where T : UnityEngine.Object
         {
             var assetId = new PrefixedId(id.mod, $"{id.id}.{typeof(T).Name}");
@@ -105,10 +96,5 @@ namespace PipLib.Asset
             value = (T)obj;
             return found;
         }
-    }
-
-    public class KAnimComponentMissingException : Exception
-    {
-        public KAnimComponentMissingException(PrefixedId animName, string missingComponent) : base($"KAnim ${animName} missing component: {missingComponent}") { }
     }
 }

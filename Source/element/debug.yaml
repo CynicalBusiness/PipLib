@@ -1,5 +1,6 @@
 ﻿elements:
-  - elementId: BaseDebugElementSolid
+
+  - elementId: Base_DebugElement_Solid
     specificHeatCapacity: 0
     thermalConductivity: 0
     solidSurfaceAreaMultiplier: 0
@@ -7,7 +8,7 @@
     gasSurfaceAreaMultiplier: 0
     strength: 0
     highTemp: 372.15 # 100C
-    highTempTransitionTarget: BaseDebugElementLiquid
+    highTempTransitionTarget: Base_DebugElement_Liquid
     defaultTemperature: 1
     defaultMass: 5000
     maxMass: 1000
@@ -20,7 +21,8 @@
     buildMenuSort: 1
     isDisabled: false
     state: Solid
-    localizationID: STRINGS.ELEMENTS.BASEDEBUGELEMENTSOLID.NAME
+    localizationID: STRINGS.ELEMENTS.BASE_DEBUGELEMENT_SOLID.NAME
+
   - elementId: BaseDebugElementLiquid
     maxMass: 1000
     liquidCompression: 1.01
@@ -34,7 +36,7 @@
     gasSurfaceAreaMultiplier: 1
     lowTemp: 372.15
     highTemp: 472.15
-    lowTempTransitionTarget: BaseDebugElementSolid
+    lowTempTransitionTarget: Base_DebugElement_Solid
     highTempTransitionTarget: Steam
     defaultTemperature: 282.15
     defaultMass: 1200
@@ -45,5 +47,5 @@
     - AnyWater
     isDisabled: false
     state: Liquid
-    localizationID: STRINGS.ELEMENTS.BASEDEBUGELEMENTSOLID.NAME
+    localizationID: STRINGS.ELEMENTS.BASE_DEBUGELEMENT_SOLID.NAME
     

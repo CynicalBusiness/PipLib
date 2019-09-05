@@ -13,9 +13,12 @@ namespace PipLib.World
 
         public static readonly Color32 WHITE = new Color32(255, 255, 255, 255);
 
-        /**
-         * Gets the base engine material for a given substance state
-         */
+        /// <summary>
+        /// Gets the base material for a given <see cref="Element.State"/>
+        /// </summary>
+        /// <param name="state">The state</param>
+        /// <param name="substanceTable">The table of vanilla substances</param>
+        /// <returns>The material (which can be null)</returns>
         public static Material GetBaseMaterialForState(Element.State state, SubstanceTable substanceTable)
         {
             switch (state)
@@ -32,6 +35,12 @@ namespace PipLib.World
             }
         }
 
+        /// <summary>
+        /// Gets the default <see cref="KAnimFile"/> for a given <see cref="Element.State"/>.
+        /// </summary>
+        /// <param name="state">The state</param>
+        /// <param name="substanceTable">The table of vanilla substances</param>
+        /// <returns>The anim</returns>
         public KAnimFile GetDefaultKAnimForState(Element.State state, SubstanceTable substanceTable)
         {
             switch (state)
@@ -66,19 +75,34 @@ namespace PipLib.World
 
         public PipElement(PipMod mod, string id) : base(new PrefixedId(mod, id)) { }
 
+        /// <summary>
+        /// Gets the Simulation ID (formatted <c>Prefix_ElementName_State</c>) for this <see cref="PipElement"/>.
+        /// </summary>
+        /// <param name="state">The state</param>
+        /// <returns>The Simulation Id</returns>
         public string SimId(Element.State state)
         {
-            return $"{id.mod.name}{id.id}{state}";
+            return $"{id.mod.prefix}_{id.id}_{state}";
         }
 
+        /// <summary>
+        /// Gets the Asset ID (formatted <c>prefix_elementname_state</c>) for this <see cref="PipElement"/>.
+        /// </summary>
+        /// <param name="state">The state</param>
+        /// <returns>The Asset ID</returns>
         public string AssetId(Element.State state)
         {
-            return $"{id.id}_{state}".ToLower();
+            return SimId(state).ToLower();
         }
 
+        /// <summary>
+        /// Gets the Strings ID (formatted <c>PREFIX_ELEMENTNAME_STATE</c>) for this <see cref="PipElement"/>.
+        /// </summary>
+        /// <param name="state">The state</param>
+        /// <returns>The Strings ID</returns>
         public string StringsId(Element.State state)
         {
-            return $"{id.mod.name}{id.id}{state}".ToUpper();
+            return SimId(state).ToUpper();
         }
 
         public Dictionary<Element.State, PipElementState>.KeyCollection States => states.Keys;
@@ -115,20 +139,10 @@ namespace PipLib.World
                     {
                         mat.mainTexture = tex;
                     }
-                    /* else
-                    {
-                        Debug.LogWarning($"Missing Texture: {assetId} (was the bundle containing it loaded?)");
-                        mat.mainTexture = BaseMod.instance.GetAsset<Texture2D>($"{BaseMod.MISSING_TEX_NAME}_{state.ToString().ToLower()}");
-                    } */
                     mat.name = simId + AssetLoader.SUFFIX_MATERIAL;
                 }
 
-                var anim = Assets.GetAnim(assetId + AssetLoader.SUFFIX_ITEM) ?? GetDefaultKAnimForState(state, substanceTable);
-                /* if (anim == null)
-                {
-                    Debug.LogWarning($"Missing KAnim: {assetId} ({simId}) (was the bundle containing it loaded? has the anim been built?)");
-                    anim = Assets.GetAnim(BaseMod.NAME + "_" + BaseMod.MISSING_ANIM_NAME + AssetLoader.SUFFIX_ITEM);
-                } */
+                var anim = Assets.GetAnim(assetId + AssetLoader.SUFFIX_ANIM) ?? GetDefaultKAnimForState(state, substanceTable);
 
                 Debug.Log($"** {simId} ({data.simHash})");
                 substanceList.Add(data.simHash, ModUtil.CreateSubstance(
@@ -186,6 +200,14 @@ namespace PipLib.World
             return states.TryGetValue(state, out materialState);
         }
 
+        /// <summary>
+        /// Adds a new <see cref="Element.State"/> to this <see cref="PipElement"/>.
+        /// </summary>
+        /// <param name="state">The state to add</param>
+        /// <param name="stateColor">The base color of the state. Defaults to white.</param>
+        /// <param name="colorUi">The color displayed in the UI. Defaults to the state color.</param>
+        /// <param name="colorConduit">The color displayed in pipes. Defaults to the state color.</param>
+        /// <returns>This element</returns>
         public PipElement AddState(Element.State state, Color32? stateColor, Color32? colorUi = null, Color32? colorConduit = null)
         {
             if (states.ContainsKey(state))
@@ -208,21 +230,11 @@ namespace PipLib.World
                 colorConduit = color;
             }
 
-            // Obsoleted
-            /* try
-            {
-                id.mod.BuildKAnim(assetId + AssetLoader.SUFFIX_ITEM);
-            }
-            catch (KAnimComponentMissingException ex)
-            {
-                Debug.LogWarning($"Failed loading {simId} KAnim: " + ex.Message);
-            } */
-
             states.Add(state, new PipElementState()
             {
                 state = state,
                 material = this,
-                simHash = (SimHashes)Hash.SDBMLower(simId),
+                simHash = (SimHashes)((HashedString)simId).HashValue,
                 attributeModifiers = new List<Func<AttributeModifier>>(),
                 color = color,
                 colorUi = (Color32)colorUi,
@@ -248,13 +260,17 @@ namespace PipLib.World
             return AddState(Element.State.Gas, stateColor, colorUi, colorConduit);
         }
 
-        // TODO liquids and gasses
-
-        // this is a function instead of a normal argument, because calling Db.Get() early breaks things
+        /// <summary>
+        /// Adds an attriubte to the given <see cref="Element.State"/> of this <see cref="PipElement"/>.
+        /// </summary>
+        /// <param name="state">The state to add to</param>
+        /// <param name="attribute">The attribute to add, wrapped in a function</param>
+        /// <returns>This element</returns>
         public PipElement AddAttribute(Element.State state, Func<AttributeModifier> attribute)
         {
             if (TryGetState(state, out var data))
             {
+                // this is a function instead of a normal argument, because calling Db.Get() early breaks things
                 data.attributeModifiers.Add(attribute);
             }
             else
