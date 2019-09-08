@@ -1,34 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using PipLib.Mod;
-using PipLib.World;
 
 namespace PipLib
 {
     public class PipLib
     {
+        public static readonly string Version = typeof(PipLib).Assembly.GetName().Version.ToString();
+        public static readonly string Product = typeof(PipLib).Assembly.GetName().Name;
 
-        public static readonly List<PipMod> mods = new List<PipMod>();
+        internal static readonly List<PipMod> mods = new List<PipMod>();
+        internal static readonly ILogger logger = GlobalLogger.Get().Fork("PipLib");
 
-        public static void OnLoad()
+        public static void Add(PipMod mod)
         {
-
+            logger.Info("Added: ", mod.name);
         }
 
-        public static void LoadMod(PipMod mod)
+        internal static void Load ()
         {
-            try
-            {
-                Debug.Log($"Loading: {mod.name} ({mod.GetType().FullName})");
-                mod.Load();
-                WorldPatches.RegisterAll(mod);
-                mods.Add(mod);
-            }
-            catch (Exception err)
-            {
-                Debug.LogWarning($"Failed to load {mod.GetType().FullName}");
-                Debug.LogException(err);
-            }
+            logger.Info("== Loading {0} v{1}", Product, Version);
+            Patches.RegisterAll();
         }
     }
 }

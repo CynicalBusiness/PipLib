@@ -26,12 +26,15 @@ namespace PipLib.Mod
         public readonly string name;
         public readonly string prefix;
 
+        public readonly ILogger logger;
+
         protected internal readonly List<PipElement> elements = new List<PipElement>();
 
         public PipMod(string name, string prefix = null)
         {
             this.name = name;
             this.prefix = prefix ?? name;
+            logger = GlobalLogger.Get().Fork(name);
         }
 
         public abstract void Load();
@@ -44,6 +47,7 @@ namespace PipLib.Mod
         {
             foreach (var element in elements)
             {
+                logger.Debug("queue element: {0}", element.id);
                 this.elements.Add(element);
             }
         }
@@ -68,7 +72,9 @@ namespace PipLib.Mod
         /// <seealso cref="AssetLoader.GetAsset{T}(PrefixedId, out T)"/>
         public T GetAsset<T>(string name) where T : UnityEngine.Object
         {
-            AssetLoader.Get().GetAsset<T>(new PrefixedId(this, name), out var asset);
+            var id = new PrefixedId(this, name);
+            AssetLoader.Get().GetAsset<T>(id, out var asset);
+            logger.Debug("tried fetching asset '{0}' (success: {1})", id, asset != null);
             return asset;
         }
 

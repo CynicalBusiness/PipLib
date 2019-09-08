@@ -7,19 +7,32 @@ using Klei;
 using PipLib.Asset;
 using PipLib.Mod;
 
-namespace PipLib.World
+namespace PipLib
 {
-    public class WorldPatches
+    public class Patches
     {
 
         public static Dictionary<SimHashes, string> simHashTable = new Dictionary<SimHashes, string>();
         public static Dictionary<string, object> simHashReverseTable = new Dictionary<string, object>();
 
-        public static void RegisterAll(PipMod mod)
+        public static void RegisterAll()
         {
-            foreach (var e in mod.elements)
+            foreach (var mod in PipLib.mods)
             {
-                e.RegisterSimHashes(simHashTable, simHashReverseTable);
+                foreach (var e in mod.elements)
+                {
+                    e.RegisterSimHashes(simHashTable, simHashReverseTable);
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Game))]
+        [HarmonyPatch("OnPrefabInit")]
+        private class Patch_Game_OnPrefabInit
+        {
+            public static void Postfix()
+            {
+                PipLib.Load();
             }
         }
 
@@ -81,7 +94,7 @@ namespace PipLib.World
         {
             private static void Postfix(ref List<ElementLoader.ElementEntry> __result)
             {
-                Debug.Log("Injecting elements...");
+                PipLib.logger.Info("Injecting elements...");
                 foreach (var mod in PipLib.mods)
                 {
                     var pooledList = ListPool<FileHandle, ElementLoader>.Allocate();
@@ -96,14 +109,8 @@ namespace PipLib.World
                         }
                     }
                     pooledList.Recycle();
-                    /* var loaded = YamlIO.Parse<ElementLoader.ElementEntryCollection>(mod.GetAsset<TextAsset>(AssetLoader.ELEMENTS).text, null);
-                    foreach (var e in loaded.elements)
-                    {
-                        Debug.Log($"* {e.elementId}");
-                        __result.Add(e);
-                    } */
                 }
-                Debug.Log("Done injecting.");
+                PipLib.logger.Info("Done injecting.");
             }
         }
 
