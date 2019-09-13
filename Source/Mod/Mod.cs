@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using PipLib.Asset;
-using PipLib.World;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace PipLib.Mod
 {
@@ -28,7 +27,7 @@ namespace PipLib.Mod
 
         public readonly ILogger logger;
 
-        protected internal readonly List<PipElement> elements = new List<PipElement>();
+        protected internal readonly List<ElementFactory> elements = new List<ElementFactory>();
 
         public PipMod(string name, string prefix = null)
         {
@@ -39,43 +38,43 @@ namespace PipLib.Mod
 
         public abstract void Load();
 
-        /// <summary>
-        /// Adds the given elements to be loaded
-        /// </summary>
-        /// <param name="elements"></param>
-        public void AddElements(IEnumerable<PipElement> elements)
+        public ElementFactory CreateElement(string name)
         {
-            foreach (var element in elements)
+            var element = PipLib.CreateElement(this, name);
+            elements.Add(element);
+            return element;
+        }
+
+        internal void RegisterSimHashes(Dictionary<SimHashes, string> hashTable, Dictionary<string, object> hashTableReverse)
+        {
+            foreach (var e in elements)
             {
-                logger.Debug("queue element: {0}", element.id);
-                this.elements.Add(element);
+                e.RegisterSimHashes(hashTable, hashTableReverse);
             }
         }
 
-        /// <summary>
-        /// Loads the given Unity asset bundle into the <see cref="AssetLoader"/>.
-        /// </summary>
-        /// <param name="bundle">The name of the bundle to load</param>
-        /// <returns>The number of loaded assets</returns>
-        /// <seealso cref="AssetLoader"/>
-        public int LoadAssetBundle(string bundle)
+        internal void RegisterSubstances(Hashtable substanceList, SubstanceTable substanceTable)
         {
-            return AssetLoader.Get().LoadBundle(this, bundle);
+            foreach (var e in elements)
+            {
+                e.RegisterSubstances(substanceList, substanceTable);
+            }
         }
 
-        /// <summary>
-        /// Gets an asset from an already-loaded asset bundle by name.
-        /// </summary>
-        /// <typeparam name="T">The type of asset to get</typeparam>
-        /// <param name="name">The name of the asset</param>
-        /// <returns>The asset found, or <c>null</c>.</returns>
-        /// <seealso cref="AssetLoader.GetAsset{T}(PrefixedId, out T)"/>
-        public T GetAsset<T>(string name) where T : UnityEngine.Object
+        internal void RegisterStrings()
         {
-            var id = new PrefixedId(this, name);
-            AssetLoader.Get().GetAsset<T>(id, out var asset);
-            logger.Debug("tried fetching asset '{0}' (success: {1})", id, asset != null);
-            return asset;
+            foreach (var e in elements)
+            {
+                e.RegisterStrings();
+            }
+        }
+
+        internal void RegisterAttributes()
+        {
+            foreach (var e in elements)
+            {
+                e.RegisterAttributes();
+            }
         }
 
         public override string ToString()
@@ -99,45 +98,38 @@ namespace PipLib.Mod
     /// <summary>
     /// Core implementation of <see cref="PipMod"/> used for internal mod management.
     /// </summary>
-    public class BaseMod : PipMod
+    public class BasePipMod : PipMod
     {
-        public const string NAME = "Base";
+        public const string NAME = "BasePipMod";
 
         public const string MISSING_ANIM_NAME = "missinganim";
         public const string MISSING_TEX_NAME = "missingtex";
 
-        public static BaseMod instance;
+        public static BasePipMod instance;
 
         public static void OnLoad()
         {
-            PipLib.LoadMod(BaseMod.instance);
+            PipLib.Add(instance);
         }
 
-        static BaseMod()
+        static BasePipMod()
         {
-            instance = new BaseMod();
+            instance = new BasePipMod();
         }
 
-        public BaseMod() : base(NAME)
-        {
-        }
+        public BasePipMod() : base(NAME, "Pip") { }
 
         public override void Load()
         {
-            // add elements
-            AddElements(new PipElement[]
-            {
-                new PipElement(this, "DebugElement"){
-                    name = "Debug Element",
-                    desc = "Internal debugging element for PipLib. Not intended for normal gameplay.",
-                    baseColor = new UnityEngine.Color32(255, 80, 255, 255)
-                }
-                    .AddSolid()
-                    .AddLiquid()
-                    .AddGas()
-                    .AddBuildingOverheatModifier(1000f)
-                    .AddBuildingDecorModifier(1f)
-            });
+            CreateElement("DebugElement")
+                .SetUnlocalizedName("Debug Element")
+                .AddUnlocalizedDescription("Internal debugging element for PipLib. Not intended for normal gameplay.")
+                .SetColor(new UnityEngine.Color32(255, 80, 255, 255))
+                .AddState(Element.State.Solid)
+                .AddState(Element.State.Liquid)
+                .AddState(Element.State.Gas)
+                .AddAttributeModifier(db => db.BuildingAttributes.Decor.Id, 1f, isMultiplier: true)
+                .AddAttributeModifier(db => db.BuildingAttributes.OverheatTemperature.Id, 1000f);
         }
     }
 }

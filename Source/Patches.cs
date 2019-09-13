@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using Harmony;
 using Klei;
-using PipLib.Asset;
 using PipLib.Mod;
 
 namespace PipLib
@@ -19,18 +18,16 @@ namespace PipLib
         {
             foreach (var mod in PipLib.mods)
             {
-                foreach (var e in mod.elements)
-                {
-                    e.RegisterSimHashes(simHashTable, simHashReverseTable);
-                }
+                mod.RegisterSimHashes(simHashTable, simHashReverseTable);
+                mod.RegisterStrings();
             }
         }
 
-        [HarmonyPatch(typeof(Game))]
-        [HarmonyPatch("OnPrefabInit")]
-        private class Patch_Game_OnPrefabInit
+        [HarmonyPatch(typeof(GlobalResources))]
+        [HarmonyPatch(nameof(GlobalResources.Instance))]
+        private static class Patch_GlobalResources_Instance
         {
-            public static void Postfix()
+            private static void Postfix()
             {
                 PipLib.Load();
             }
@@ -38,21 +35,16 @@ namespace PipLib
 
         [HarmonyPatch(typeof(Db))]
         [HarmonyPatch(nameof(Db.Initialize))]
-        internal static class Patch_Db_Initialize
+        private static class Patch_Db_Initialize
         {
+
             private static void Postfix()
             {
-                Debug.Log("Applying substance attributes...");
+                GlobalLogger.Get().Info("Applying substance attributes...");
                 foreach (var mod in PipLib.mods)
                 {
-                    foreach (var e in mod.elements)
-                    {
-                        Debug.Log($"* {e.id}");
-                        e.RegisterAttributes();
-                    }
+                    mod.RegisterAttributes();
                 }
-
-                Debug.Log("Done applying attributes");
             }
         }
 
@@ -98,7 +90,7 @@ namespace PipLib
                 foreach (var mod in PipLib.mods)
                 {
                     var pooledList = ListPool<FileHandle, ElementLoader>.Allocate();
-                    FileSystem.GetFiles(FileSystem.Normalize(AssetLoader.GetAssemblyDirectory(mod) + "/element"), "*.yaml", pooledList);
+                    FileSystem.GetFiles(FileSystem.Normalize(AssetLoader.GetAssemblyDirectory(mod) + "/elements"), "*.yml", pooledList);
                     foreach (var file in pooledList)
                     {
                         Debug.Log(file.full_path);
@@ -122,29 +114,11 @@ namespace PipLib
 
             private static void Prefix(ref Hashtable substanceList, SubstanceTable substanceTable)
             {
-                Debug.Log("Registering substances...");
-                int numElements = 0, numSubstances = 0;
+                GlobalLogger.Get().Info("Registering substances...");
                 foreach (var mod in PipLib.mods)
                 {
-                    Debug.Log($"* {mod.name}");
-                    foreach (var e in mod.elements)
-                    {
-                        var states = e.States;
-                        if (states.Count > 0)
-                        {
-                            Debug.Log($"** {e}");
-                            e.RegisterSubstances(substanceList, substanceTable);
-                            numElements++;
-                            numSubstances += states.Count;
-                        }
-                        else
-                        {
-                            Debug.LogWarning($"{e.id} has no states");
-                        }
-                    }
+                    mod.RegisterSubstances(substanceList, substanceTable);
                 }
-
-                Debug.Log($"Done registering {numSubstances} substances for {numElements} elements");
             }
         }
     }

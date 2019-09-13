@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace PipLib
 {
@@ -69,12 +70,12 @@ namespace PipLib
 
         public void Log(LEVEL level, string message, params object[] args)
         {
-            Log(level, new string[] { prefix }, string.Format(message, args));
+            Log(level, new string[] { }, string.Format(message, args));
         }
 
         public void Log(LEVEL level, object obj, UnityEngine.Object context = null)
         {
-            Log(level, new string[] { prefix }, obj, context);
+            Log(level, new string[] { }, obj, context);
         }
 
         public void Log(Exception ex, LEVEL level = LEVEL.ERROR)
@@ -148,7 +149,7 @@ namespace PipLib
 
         private static string GetTimestamp()
         {
-            return System.DateTime.UtcNow.ToShortTimeString();
+            return System.DateTime.UtcNow.ToString("HH:mm:ss.fff");
         }
 
         public ILogger Fork(string prefix)
@@ -158,7 +159,15 @@ namespace PipLib
 
         private void Write(Logger.LEVEL level, string[] prefix, object[] data)
         {
-            Console.WriteLine(string.Format("{0} {1,5}: [{2}] {3}", GetTimestamp(), level.ToString(), string.Join(":", prefix), DebugUtil.BuildString(data)));
+            string head = string.Format("[{0}] [{1}] [{2}]", GetTimestamp(), Thread.CurrentThread.ManagedThreadId, level.ToString());
+            if (prefix.Length > 0)
+            {
+                Console.WriteLine(string.Format("{0} [{1}] {2}", head, string.Join(":", prefix), DebugUtil.BuildString(data)));
+            }
+            else
+            {
+                Console.WriteLine(string.Format("{0} {1}", head, DebugUtil.BuildString(data)));
+            }
         }
 
         public void Log(Logger.LEVEL level, string[] prefix, object obj, UnityEngine.Object context = null)

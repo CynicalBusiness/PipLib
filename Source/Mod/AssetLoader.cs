@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using PipLib.Mod;
 using UnityEngine;
 
-namespace PipLib.Asset
+namespace PipLib.Mod
 {
     /**
      * Helper class for loading and managing assets
@@ -13,8 +12,8 @@ namespace PipLib.Asset
     {
 
         /** Name of the default resource bundle file */
-        public const string RESOURCE_BUNDLE_NAME = "resources.assets";
         public const string ELEMENTS = "elements";
+        public const string TEXTURES = "textures";
 
         public const string SUFFIX_MATERIAL = "_mat";
         public const string SUFFIX_ITEM = "_item";
@@ -30,6 +29,21 @@ namespace PipLib.Asset
         public static string GetAssemblyDirectory(PipMod mod)
         {
             return Path.GetDirectoryName(Assembly.GetAssembly(mod.GetType()).Location);
+        }
+
+        public static Texture2D GetTexture(PipMod mod, string name)
+        {
+            string filepath = Path.Combine(Path.Combine(GetAssemblyDirectory(mod), TEXTURES), name + ".png");
+            Texture2D tex = null;
+
+            if (File.Exists(filepath))
+            {
+                var data = File.ReadAllBytes(filepath);
+                tex = new Texture2D(2, 2);
+                tex.LoadImage(data);
+            }
+
+            return tex;
         }
 
         private static AssetLoader instance;
@@ -55,7 +69,7 @@ namespace PipLib.Asset
         /// <param name="mod">The mod that owns the bundle</param>
         /// <param name="bundle">The name of the bundle</param>
         /// <returns>The number of assets loaded</returns>
-        public int LoadBundle(PipMod mod, string bundle = RESOURCE_BUNDLE_NAME)
+        public int LoadBundle(PipMod mod, string bundle)
         {
             Debug.Log($"Loading bundle '{bundle}' for ${mod}");
             string bundlePath = Path.Combine(GetAssemblyDirectory(mod), bundle);

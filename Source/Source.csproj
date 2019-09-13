@@ -2,12 +2,11 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup Label="UserMacros">
-    <GameProgramDir>$(MSBuildProgramFiles32)\Steam\steamapps\common\OxygenNotIncluded</GameProgramDir>
-    <GameConfigDir>$(USERPROFILE)\Documents\Klei\OxygenNotIncluded</GameConfigDir>
-    <GameProgramDataDir>$(GameProgramDir)\OxygenNotIncluded_Data</GameProgramDataDir>
-    <LibDir>lib</LibDir>
-    <LibDataDir>$(LibDir)\Data</LibDataDir>
-    <LibConfigDir>$(LibDir)\Config</LibConfigDir>
+    <GameName>OxygenNotIncluded</GameName>
+    <GameProgramDir>$(MSBuildProgramFiles32)\Steam\steamapps\common\$(GameName)</GameProgramDir>
+    <GameConfigDir>$(USERPROFILE)\Documents\Klei\$(GameName)</GameConfigDir>
+    <GameProgramDataDir>$(GameProgramDir)\$(GameName)_Data</GameProgramDataDir>
+    <GameLibDir>$(GameProgramDataDir)\Managed</GameLibDir>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -27,7 +26,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(LibConfigDir)\mods\Dev\$(AssemblyName)\</OutputPath>
+    <OutputPath>$(GameConfigDir)\mods\Dev\$(AssemblyName)</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -41,22 +40,17 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <Target Name="SetupLib">
-    <MakeDir Directories="$(LibDir)" />
-    <Exec Condition="!Exists('$(LibDataDir)')" Command="mklink /J &quot;$(LibDataDir)&quot; &quot;$(GameProgramDataDir)&quot;" />
-    <Exec Condition="!Exists('$(LibConfigDir)')" Command="mklink /J &quot;$(LibConfigDir)&quot; &quot;$(GameConfigDir)&quot;" />
-  </Target>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>$(LibDataDir)\Managed\0Harmony.dll</HintPath>
+      <HintPath>$(GameLibDir)\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>$(LibDataDir)\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>$(GameLibDir)\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>$(LibDataDir)\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>$(GameLibDir)\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -66,34 +60,43 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>$(LibDataDir)\Managed\UnityEngine.dll</HintPath>
+      <HintPath>$(GameLibDir)\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>$(LibDataDir)\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>$(GameLibDir)\UnityEngine.AssetBundleModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(LibDataDir)\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(GameLibDir)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>$(GameLibDir)\UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\AssetLoader.cs" />
+    <Compile Include="Mod\AbstractFactory.cs" />
+    <Compile Include="Mod\AssetLoader.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Mod\ElementFactory.cs" />
     <Compile Include="Mod\Mod.cs" />
     <Compile Include="Mod\PrefixedId.cs" />
     <Compile Include="PipLib.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="World\Element.cs" />
+    <Compile Include="Util.cs" />
     <Compile Include="Patches.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
-    <None Include="element\debug.yaml">
+    <None Include="Elements\debug.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\*" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
@@ -114,7 +117,8 @@
     <ItemGroup>
       <AssemblyInfoFiles Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
-    <Message Text="Built" />
+    <Message Text="Applying properties and copying files..." />
+    <Copy SourceFiles="@(Content)" DestinationFolder="$(OutDir)" />
     <MSBuild.ExtensionPack.Framework.AssemblyInfo AssemblyInfoFiles="@(AssemblyInfoFiles)" AssemblyBuildNumberType="YearWeekDay" FirstDayOfWeek="Sunday" AssemblyFileBuildNumberType="YearWeekDay" AssemblyFileRevisionType="AutoIncrement" />
   </Target>
 </Project>
