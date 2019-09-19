@@ -28,9 +28,14 @@ namespace PipLib.Mod
         public readonly ILogger logger;
 
         protected internal readonly List<ElementFactory> elements = new List<ElementFactory>();
+        protected internal readonly List<BuildingFactory> buildings = new List<BuildingFactory>();
 
-        public PipMod(string name, string prefix = null)
+        public PipMod(string name = null, string prefix = null)
         {
+            if (name == null)
+            {
+                name = GetType().Name;
+            }
             this.name = name;
             this.prefix = prefix ?? name;
             logger = GlobalLogger.Get().Fork(name);
@@ -38,11 +43,60 @@ namespace PipLib.Mod
 
         public abstract void Load();
 
+        /// <summary>
+        /// Creates a new element factory to register new substances. Substances are registered automatically.
+        /// </summary>
+        /// <see cref="ElementFactory"/>
+        /// <param name="name">The internal name of the element</param>
+        /// <returns>An element factory</returns>
         public ElementFactory CreateElement(string name)
         {
             var element = PipLib.CreateElement(this, name);
             elements.Add(element);
             return element;
+        }
+
+        /// <summary>
+        /// Creates multiple tags in bulk
+        /// </summary>
+        /// <param name="tags">The tags to create</param>
+        public void CreateTags (params string[] tags)
+        {
+            foreach (var tag in tags)
+            {
+                CreateTag(tag);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new substance tag with the given name and an optional proper name
+        /// </summary>
+        /// <param name="tag">The tag name</param>
+        /// <param name="properName">The tag's proper name, if any</param>
+        public void CreateTag (string tag, string properName = null)
+        {
+            if (properName != null)
+            {
+                logger.Info("Create tag: {0} ({1}}", properName, tag);
+                TagManager.Create(tag, properName);
+            }
+            else
+            {
+                logger.Info("Create tag: {0}", tag);
+                TagManager.Create(tag);
+            }
+        }
+
+        /// <summary>
+        /// Creates a factory for adding a building
+        /// </summary>
+        /// <param name="name">The internal name of the building</param>
+        /// <returns>The building factory</returns>
+        public BuildingFactory CreateBuilding (string name)
+        {
+            var building = PipLib.CreateBuilding(this, name);
+            buildings.Add(building);
+            return building;
         }
 
         internal void RegisterSimHashes(Dictionary<SimHashes, string> hashTable, Dictionary<string, object> hashTableReverse)
@@ -66,6 +120,10 @@ namespace PipLib.Mod
             foreach (var e in elements)
             {
                 e.RegisterStrings();
+            }
+            foreach (var b in buildings)
+            {
+                b.RegisterStrings();
             }
         }
 

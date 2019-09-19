@@ -70,7 +70,7 @@ namespace PipLib.Mod
 
         public string Id(Element.State state)
         {
-            return (id.mod.prefix ?? id.mod.name) + id.id + state.ToString();
+            return Id() + state.ToString();
         }
         internal void RegisterSimHashes(Dictionary<SimHashes, string> hashTable, Dictionary<string, object> hashTableReverse)
         {
@@ -109,7 +109,7 @@ namespace PipLib.Mod
                 Strings.Add(strName, name ?? simId);
                 Strings.Add(strDesc, $"{STRINGS.UI.FormatAsLink(name ?? id.ToString(), simId)} in a {STRINGS.UI.FormatAsLink(state.ToString(), "ELEMENTS" + state.ToString())} state.\n{description ?? ""}".Trim());
 
-                id.mod.logger.Info("add strings: {0} ({1}): {2}", Strings.Get(strName), simId, Strings.Get(strDesc).String.Replace("\n", "\\n"));
+                id.mod.logger.Info("add Substance strings: {0} ({1}): {2}", Strings.Get(strName), simId, Strings.Get(strDesc).String.Replace("\n", "\\n"));
             }
         }
 

@@ -24,6 +24,11 @@ namespace PipLib
             return new ElementFactory(new PrefixedId(mod, name));
         }
 
+        public static BuildingFactory CreateBuilding (PipMod mod, string name)
+        {
+            return new BuildingFactory(new PrefixedId(mod, name));
+        }
+
         internal static void Load()
         {
             if (!loaded)

@@ -80,6 +80,8 @@
     <Compile Include="Mod\AbstractFactory.cs" />
     <Compile Include="Mod\AssetLoader.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Mod\BuildingFactory.cs" />
+    <Compile Include="Mod\DebugBuildingConfig.cs" />
     <Compile Include="Mod\ElementFactory.cs" />
     <Compile Include="Mod\Mod.cs" />
     <Compile Include="Mod\PrefixedId.cs" />

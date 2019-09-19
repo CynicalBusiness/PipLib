@@ -3,7 +3,6 @@
     /// <summary>
     /// A generic factory class for a given type
     /// </summary>
-    /// <typeparam name="R">The resulting object</typeparam>
     public abstract class AbstractFactory
     {
         public readonly PrefixedId id;
@@ -16,5 +15,10 @@
         public string Name => id.id;
 
         public PipMod Mod => id.mod;
+
+        public string Id ()
+        {
+            return (id.mod.prefix ?? id.mod.name) + id.id;
+        }
     }
 }
