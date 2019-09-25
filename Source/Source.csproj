@@ -106,7 +106,6 @@
   <ItemGroup>
     <Content Include="Resources\*" />
     <Content Include="lib\*.license" />
-    <Content Include="$(SolutionDir)\LICENSE" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
@@ -130,6 +129,15 @@
     <Message Text="Applying properties and copying files..." />
     <Copy SourceFiles="@(Content)" DestinationFolder="$(OutDir)" />
     <MSBuild.ExtensionPack.Framework.AssemblyInfo AssemblyInfoFiles="@(AssemblyInfoFiles)" AssemblyBuildNumberType="YearWeekDay" FirstDayOfWeek="Sunday" AssemblyFileBuildNumberType="YearWeekDay" AssemblyFileRevisionType="AutoIncrement" />
+  </Target>
+  <Target Name="CopyLicenses" AfterTargets="Build">
+    <ItemGroup>
+      <LicensesI Include="$(SolutionDir)/LICENSE"/>
+      <LicensesO Include="$(OutputPath)/$(AssemblyName).LICENSE"/>
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(LicensesI)"
+      DestinationFiles="@(LicensesO)"/>
   </Target>
   <Target Name="DownloadAdditionalLibs">
     <DownloadFile
