@@ -15,7 +15,7 @@ namespace PipLib.Mod
             this.mod = mod;
             this.id = id;
 
-            value = $"{mod.name}.{id}";
+            value = mod.Name + id;
         }
 
         public PrefixedId(PipMod mod, PrefixedId id) : this(mod, id.value) { }

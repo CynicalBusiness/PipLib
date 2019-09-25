@@ -131,6 +131,7 @@ namespace PipLib.Mod
             }
             return index;
         }
+
         internal void RegisterStrings()
         {
             var simId = Id();

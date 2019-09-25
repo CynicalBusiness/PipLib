@@ -1,50 +1,23 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using Harmony;
-using Klei;
-using PipLib.Mod;
+using System.Linq;
+using System.Text;
 
-namespace PipLib
+namespace PipLib.Patches
 {
-    public class Patches
+    public static class Elements
     {
 
         public static Dictionary<SimHashes, string> simHashTable = new Dictionary<SimHashes, string>();
         public static Dictionary<string, object> simHashReverseTable = new Dictionary<string, object>();
 
+        /*
         public static void RegisterAll()
         {
             foreach (var mod in PipLib.mods)
             {
                 mod.RegisterSimHashes(simHashTable, simHashReverseTable);
                 mod.RegisterStrings();
-            }
-        }
-
-        [HarmonyPatch(typeof(GlobalResources))]
-        [HarmonyPatch(nameof(GlobalResources.Instance))]
-        private static class Patch_GlobalResources_Instance
-        {
-            private static void Postfix()
-            {
-                PipLib.Load();
-            }
-        }
-
-        [HarmonyPatch(typeof(Db))]
-        [HarmonyPatch(nameof(Db.Initialize))]
-        private static class Patch_Db_Initialize
-        {
-
-            private static void Postfix()
-            {
-                GlobalLogger.Get().Info("Applying substance attributes...");
-                foreach (var mod in PipLib.mods)
-                {
-                    mod.RegisterAttributes();
-                }
             }
         }
 
@@ -120,12 +93,6 @@ namespace PipLib
                     mod.RegisterSubstances(substanceList, substanceTable);
                 }
             }
-        }
+        } */
     }
-
-    public class UnknownPipObjectException : Exception
-    {
-        public UnknownPipObjectException(PipObject obj) : base($"Tried adding unknown PipLib object: {obj.GetType().FullName}") { }
-    }
-
 }

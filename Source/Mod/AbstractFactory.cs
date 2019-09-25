@@ -18,7 +18,7 @@
 
         public string Id ()
         {
-            return (id.mod.prefix ?? id.mod.name) + id.id;
+            return id.mod.Prefix + id.id;
         }
     }
 }
