@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace PipLib
@@ -157,16 +158,60 @@ namespace PipLib
             return new Logger(this, prefix);
         }
 
+        private bool ShouldWrite(Logger.LEVEL level)
+        {
+            switch (PipLib.Options.loggingVerbosity)
+            {
+                case PipLibOptions.LoggingVerbosity.Info:
+                    return level >= Logger.LEVEL.INFO;
+                case PipLibOptions.LoggingVerbosity.Verbose:
+                    return level >= Logger.LEVEL.VERB;
+                case PipLibOptions.LoggingVerbosity.Debug:
+                default:
+                    return true;
+            }
+        }
+
+        private string GetLoggingHead(Logger.LEVEL level)
+        {
+            return string.Format(PipLib.Options.doHijackLogger ? "[{0}] {1}@{2}:" : "[{0}] [{1}] [{2}]", GetTimestamp(), Thread.CurrentThread.ManagedThreadId, level.ToString());
+        }
+
+        private string GetCaller()
+        {
+            if (PipLib.Options.doHijackLogger && PipLib.Options.loggingVerbosity >= PipLibOptions.LoggingVerbosity.Debug)
+            {
+                var trace = new StackTrace();
+                int currentFrame = 1;
+                StackFrame frame;
+                do
+                {
+                    frame = trace.GetFrame(currentFrame++);
+                } while (typeof(ILogger).IsAssignableFrom(frame.GetMethod().DeclaringType)
+                    || typeof(Debug).IsAssignableFrom(frame.GetMethod().DeclaringType)
+                    || frame.GetMethod().DeclaringType.FullName.StartsWith(typeof(Patches.Logging).FullName)
+                );
+
+                var method = frame.GetMethod();
+                return string.Format("[{0}|{1}] ", method.DeclaringType.FullName, method.Name);
+            }
+            return "";
+        }
+
         private void Write(Logger.LEVEL level, string[] prefix, object[] data)
         {
-            string head = string.Format("[{0}] [{1}] [{2}]", GetTimestamp(), Thread.CurrentThread.ManagedThreadId, level.ToString());
+            if (!ShouldWrite(level))
+            {
+                return;
+            }
+
             if (prefix.Length > 0)
             {
-                Console.WriteLine(string.Format("{0} [{1}] {2}", head, string.Join(":", prefix), DebugUtil.BuildString(data)));
+                Console.WriteLine(string.Format("{0} {1}[{2}] {3}", GetLoggingHead(level), GetCaller(), string.Join(":", prefix), DebugUtil.BuildString(data)));
             }
             else
             {
-                Console.WriteLine(string.Format("{0} {1}", head, DebugUtil.BuildString(data)));
+                Console.WriteLine(string.Format("{0} {1}{2}", GetLoggingHead(level), GetCaller(), DebugUtil.BuildString(data)));
             }
         }
 

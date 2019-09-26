@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PipLib.Mod
 {
@@ -45,7 +41,7 @@ namespace PipLib.Mod
 
         public override void DoPostConfigureComplete(GameObject go)
         {
-            
+
         }
 
     }

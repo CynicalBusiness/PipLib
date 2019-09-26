@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using PipLib.Mod;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Harmony;
+using PeterHan.PLib.Options;
+using PipLib.Mod;
 
 namespace PipLib
 {
@@ -11,57 +12,66 @@ namespace PipLib
         public static readonly string Version = typeof(PipLib).Assembly.GetName().Version.ToString();
         public static readonly string Product = typeof(PipLib).Assembly.GetName().Name;
 
+        internal static Dictionary<SimHashes, string> simHashTable = new Dictionary<SimHashes, string>();
+        internal static Dictionary<string, object> simHashReverseTable = new Dictionary<string, object>();
+
         internal static readonly ILogger Logger = GlobalLogger.Get().Fork("PipLib");
         internal static Dictionary<string, IPipMod> mods;
 
         internal static List<Type> modTypes = new List<Type>();
         internal static List<Assembly> modAssemblies = new List<Assembly>();
 
-        public static HarmonyInstance HarmonyInstance { get; private set; }
+        public static PipLibOptions Options { get; private set; }
 
-        public static void PrePatch(HarmonyInstance harmony)
+        public static void PrePatch(HarmonyInstance _)
         {
-            // push the harmony instance that is used to load this mod
-            HarmonyInstance = harmony;
+            POptions.RegisterOptions(typeof(PipLibOptions));
+            Options = POptions.ReadSettings<PipLibOptions>() ?? new PipLibOptions();
+            if (Options.enableDeveloperConsole)
+            {
+                Debug.developerConsoleVisible = true;
+            }
+
+            Logger.Info("Using options: {0}", Options.ToString());
+            Logger.Info("Hooked into harmony, watching for assemblies to be patched in...");
         }
 
         public static void PostPatch(HarmonyInstance _)
         {
             // add our assembly in first, since the patch will miss it
             modAssemblies.Insert(0, Assembly.GetExecutingAssembly());
-            Logger.Info("Hooked into harmony, watching for assemblies to be patched in...");
         }
 
-        public static IEnumerable<IPipMod> Mods
-        {
-            get
-            {
-                return mods.Values;
-            }
-        }
+        public static IEnumerable<IPipMod> Mods => mods.Values;
 
-        private static List<Type> GetAllModImplementations ()
+        private static List<Type> GetAllModImplementations()
         {
             var impl = new List<Type>();
             foreach (var assembly in modAssemblies)
             {
+                bool found = false;
                 foreach (var type in assembly.GetTypes())
                 {
                     if (typeof(IPipMod).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
                     {
                         impl.Add(type);
+                        found = true;
                     }
+                }
+                if (!found)
+                {
+                    Logger.Verbose("Assembly \"{0}\" does not contain PipLib Mod, not handling it...", assembly.GetName().FullName);
                 }
             }
             return impl;
         }
 
-        private static List<IPipMod> GetAllMods ()
+        private static List<IPipMod> GetAllMods()
         {
             return GetAllModImplementations().ConvertAll(t => (IPipMod)Activator.CreateInstance(t));
         }
 
-        private static Dictionary<string, IPipMod> GetMods ()
+        private static Dictionary<string, IPipMod> GetMods()
         {
             var dict = new Dictionary<string, IPipMod>();
             foreach (var mod in GetAllMods())
@@ -71,12 +81,12 @@ namespace PipLib
             return dict;
         }
 
-        internal static void LoadMods ()
+        internal static void LoadMods()
         {
             mods = GetMods();
         }
 
-        internal static void Load ()
+        internal static void Load()
         {
             Logger.Info("Starting mod Load");
             foreach (var mod in Mods)
@@ -86,7 +96,7 @@ namespace PipLib
             }
         }
 
-        internal static void PostLoad ()
+        internal static void PostLoad()
         {
             Logger.Info("Starting mod PostLoad");
             foreach (var mod in Mods)

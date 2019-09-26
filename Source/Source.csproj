@@ -75,6 +75,10 @@
       <HintPath>$(GameLibDir)\UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(GameLibDir)\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="PeterHan.PLib">
       <HintPath>$(ProjectDir)/lib/PLib.dll</HintPath>
     </Reference>
@@ -87,12 +91,15 @@
     <Compile Include="Mod\DebugBuildingConfig.cs" />
     <Compile Include="Mod\ElementFactory.cs" />
     <Compile Include="Mod\IPipMod.cs" />
+    <Compile Include="Mod\IWithModOptions.cs" />
     <Compile Include="Mod\PipMod.cs" />
     <Compile Include="Mod\PipModImpl.cs" />
     <Compile Include="Mod\PrefixedId.cs" />
     <Compile Include="Patches\Elements.cs" />
+    <Compile Include="Patches\Logging.cs" />
     <Compile Include="Patches\Mods.cs" />
     <Compile Include="PipLib.cs" />
+    <Compile Include="PipLibOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
@@ -105,10 +112,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\*" />
-    <Content Include="lib\*.license" />
+    <Content Include="lib\PLib.LICENSE" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tech\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -132,20 +142,13 @@
   </Target>
   <Target Name="CopyLicenses" AfterTargets="Build">
     <ItemGroup>
-      <LicensesI Include="$(SolutionDir)/LICENSE"/>
-      <LicensesO Include="$(OutputPath)/$(AssemblyName).LICENSE"/>
+      <LicensesI Include="$(SolutionDir)/LICENSE" />
+      <LicensesO Include="$(OutputPath)/$(AssemblyName).LICENSE" />
     </ItemGroup>
-    <Copy
-      SourceFiles="@(LicensesI)"
-      DestinationFiles="@(LicensesO)"/>
+    <Copy SourceFiles="@(LicensesI)" DestinationFiles="@(LicensesO)" />
   </Target>
   <Target Name="DownloadAdditionalLibs">
-    <DownloadFile
-      SourceUrl="https://github.com/peterhaneve/ONIMods/releases/latest/download/PLib.dll"
-      DestinationFolder="$(ProjectDir)/lib"/>
-    <DownloadFile
-      SourceUrl="https://raw.githubusercontent.com/peterhaneve/ONIMods/master/LICENSE"
-      DestinationFolder="$(ProjectDir)/lib"
-      DestinationFileName="PLib.LICENSE"/>
+    <DownloadFile SourceUrl="https://github.com/peterhaneve/ONIMods/releases/latest/download/PLib.dll" DestinationFolder="$(ProjectDir)/lib" />
+    <DownloadFile SourceUrl="https://raw.githubusercontent.com/peterhaneve/ONIMods/master/LICENSE" DestinationFolder="$(ProjectDir)/lib" DestinationFileName="PLib.LICENSE" />
   </Target>
 </Project>

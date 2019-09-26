@@ -1,25 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
+using Harmony;
+using Klei;
+using PipLib.Mod;
 
 namespace PipLib.Patches
 {
     public static class Elements
     {
-
-        public static Dictionary<SimHashes, string> simHashTable = new Dictionary<SimHashes, string>();
-        public static Dictionary<string, object> simHashReverseTable = new Dictionary<string, object>();
-
-        /*
-        public static void RegisterAll()
-        {
-            foreach (var mod in PipLib.mods)
-            {
-                mod.RegisterSimHashes(simHashTable, simHashReverseTable);
-                mod.RegisterStrings();
-            }
-        }
 
         [HarmonyPatch(typeof(Enum))]
         [HarmonyPatch(nameof(Enum.ToString))]
@@ -33,7 +23,7 @@ namespace PipLib.Patches
                     return true;
                 }
 
-                return !simHashTable.TryGetValue((SimHashes)__instance, out __result);
+                return !PipLib.simHashTable.TryGetValue((SimHashes)__instance, out __result);
             }
         }
 
@@ -49,7 +39,7 @@ namespace PipLib.Patches
                     return true;
                 }
 
-                return !simHashReverseTable.TryGetValue(value, out __result);
+                return !PipLib.simHashReverseTable.TryGetValue(value, out __result);
             }
         }
 
@@ -59,8 +49,8 @@ namespace PipLib.Patches
         {
             private static void Postfix(ref List<ElementLoader.ElementEntry> __result)
             {
-                PipLib.logger.Info("Injecting elements...");
-                foreach (var mod in PipLib.mods)
+                PipLib.Logger.Info("Injecting elements...");
+                foreach (var mod in PipLib.Mods)
                 {
                     var pooledList = ListPool<FileHandle, ElementLoader>.Allocate();
                     FileSystem.GetFiles(FileSystem.Normalize(AssetLoader.GetAssemblyDirectory(mod) + "/elements"), "*.yml", pooledList);
@@ -75,7 +65,7 @@ namespace PipLib.Patches
                     }
                     pooledList.Recycle();
                 }
-                PipLib.logger.Info("Done injecting.");
+                PipLib.Logger.Info("Done injecting.");
             }
         }
 
@@ -87,12 +77,15 @@ namespace PipLib.Patches
 
             private static void Prefix(ref Hashtable substanceList, SubstanceTable substanceTable)
             {
-                GlobalLogger.Get().Info("Registering substances...");
-                foreach (var mod in PipLib.mods)
+                PipLib.Logger.Info("Registering substances...");
+                foreach (var mod in PipLib.Mods)
                 {
-                    mod.RegisterSubstances(substanceList, substanceTable);
+                    foreach (var element in mod.GetElements())
+                    {
+                        element.RegisterSubstances(substanceList, substanceTable);
+                    }
                 }
             }
-        } */
+        }
     }
 }

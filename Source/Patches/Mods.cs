@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Harmony;
 using System.Reflection;
+using Harmony;
 
 namespace PipLib.Patches
 {
@@ -16,13 +13,10 @@ namespace PipLib.Patches
         private static class Patch_HarmonyInstance_PatchAll
         {
             // Used to get a copy of all mod assemblies that load after ours, in order
-            private static void Postfix(HarmonyInstance __instance, Assembly assembly)
+            private static void Postfix(Assembly assembly)
             {
-                if (__instance == PipLib.HarmonyInstance)
-                {
-                    PipLib.Logger.Verbose("Queueing assembly: {0}", assembly.GetName());
-                    PipLib.modAssemblies.Add(assembly);
-                }
+                PipLib.Logger.Verbose("Queueing assembly: {0}", assembly.GetName());
+                PipLib.modAssemblies.Add(assembly);
             }
         }
 
@@ -50,13 +44,13 @@ namespace PipLib.Patches
             // GlobalResources.Instance happens at the end of Global.Awake
             // Since we can't patch what's currently in the call stack, this will have to do
 
-            private static void Prefix ()
+            private static void Prefix()
             {
                 PipLib.LoadMods();
                 PipLib.Load();
             }
 
-            private static void Postfix ()
+            private static void Postfix()
             {
                 PipLib.PostLoad();
             }

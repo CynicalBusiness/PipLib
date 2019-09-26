@@ -16,7 +16,7 @@
 
         public PipMod Mod => id.mod;
 
-        public string Id ()
+        public string Id()
         {
             return id.mod.Prefix + id.id;
         }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Database;
 using STRINGS;
 using static TUNING.BUILDINGS;
@@ -20,19 +17,19 @@ namespace PipLib.Mod
             name = Id();
         }
 
-        public BuildingFactory SetName (string name)
+        public BuildingFactory SetName(string name)
         {
             this.name = name;
             return this;
         }
 
-        public BuildingFactory SetDescription (string desc)
+        public BuildingFactory SetDescription(string desc)
         {
             description = desc;
             return this;
         }
 
-        public BuildingFactory SetEffect (string effect)
+        public BuildingFactory SetEffect(string effect)
         {
             this.effect = effect;
             return this;
@@ -43,7 +40,7 @@ namespace PipLib.Mod
         /// </summary>
         /// <param name="techName">The name of the tech</param>
         /// <returns>This factory</returns>
-        public BuildingFactory AddPrerequisiteTech (string techName)
+        public BuildingFactory AddPrerequisiteTech(string techName)
         {
             var tech = Techs.TECH_GROUPING[techName];
             if (tech != null)
@@ -66,7 +63,7 @@ namespace PipLib.Mod
         /// <param name="categoryName">The name of the category to add to</param>
         /// <param name="afterId">The ID to add after</param>
         /// <returns>This factory</returns>
-        public BuildingFactory AddToPlanScreen (string categoryName, string afterId)
+        public BuildingFactory AddToPlanScreen(string categoryName, string afterId)
         {
             var categoryIndex = GetCategoryIndex(categoryName);
             if (categoryIndex >= 0)
@@ -94,12 +91,12 @@ namespace PipLib.Mod
         /// <param name="categoryName">The name of the category to add to</param>
         /// <param name="index">The index to insert at</param>
         /// <returns>This factory</returns>
-        public BuildingFactory AddToPlanScreen (string categoryName, int? index = null)
+        public BuildingFactory AddToPlanScreen(string categoryName, int? index = null)
         {
             return AddToPlanScreen(GetCategoryIndex(categoryName), index);
         }
 
-        private BuildingFactory AddToPlanScreen (int categoryIndex, int? positionIndex = null)
+        private BuildingFactory AddToPlanScreen(int categoryIndex, int? positionIndex = null)
         {
             if (categoryIndex >= 0)
             {
@@ -122,7 +119,7 @@ namespace PipLib.Mod
             return this;
         }
 
-        private int GetCategoryIndex (string category)
+        private int GetCategoryIndex(string category)
         {
             int index = PLANORDER.FindIndex(x => x.category.Equals(new HashedString(category)));
             if (index < 0)

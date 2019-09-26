@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using System;
-using System.Diagnostics;
 
 namespace PipLib.Mod
 {
@@ -32,7 +30,7 @@ namespace PipLib.Mod
         public readonly ILogger logger;
 
         protected internal readonly List<ElementFactory> elements = new List<ElementFactory>();
-        protected internal readonly List<BuildingFactory> buildings = new List<BuildingFactory>();
+        // protected internal readonly List<BuildingFactory> buildings = new List<BuildingFactory>();
 
         public PipMod()
         {
@@ -43,13 +41,35 @@ namespace PipLib.Mod
             }
         }
 
-        public virtual void Load() { }
-        public virtual void PostLoad() { }
-        public virtual void PreInitialize() { }
-        public virtual void Initialize() { }
-        public virtual void PostInitialize() { }
+        public IEnumerable<ElementFactory> GetElements()
+        {
+            return elements;
+        }
 
-        /*
+        public virtual void Load()
+        {
+
+        }
+
+        public virtual void PostLoad()
+        {
+            RegisterSimHashes();
+            RegisterStrings();
+        }
+
+        public virtual void PreInitialize()
+        {
+
+        }
+        public virtual void Initialize()
+        {
+
+        }
+        public virtual void PostInitialize()
+        {
+            
+        }
+
         /// <summary>
         /// Creates a new element factory to register new substances. Substances are registered automatically.
         /// </summary>
@@ -58,7 +78,7 @@ namespace PipLib.Mod
         /// <returns>An element factory</returns>
         public ElementFactory CreateElement(string name)
         {
-            var element = PipLib.CreateElement(this, name);
+            var element = new ElementFactory(new PrefixedId(this, name));
             elements.Add(element);
             return element;
         }
@@ -67,20 +87,19 @@ namespace PipLib.Mod
         /// Creates multiple tags in bulk
         /// </summary>
         /// <param name="tags">The tags to create</param>
-        public void CreateTags (params string[] tags)
+        public void CreateTags(params string[] tags)
         {
             foreach (var tag in tags)
             {
                 CreateTag(tag);
             }
         }
-
         /// <summary>
         /// Creates a new substance tag with the given name and an optional proper name
         /// </summary>
         /// <param name="tag">The tag name</param>
         /// <param name="properName">The tag's proper name, if any</param>
-        public void CreateTag (string tag, string properName = null)
+        public void CreateTag(string tag, string properName = null)
         {
             if (properName != null)
             {
@@ -94,6 +113,7 @@ namespace PipLib.Mod
             }
         }
 
+        /*
         /// <summary>
         /// Creates a factory for adding a building
         /// </summary>
@@ -104,13 +124,13 @@ namespace PipLib.Mod
             var building = PipLib.CreateBuilding(this, name);
             buildings.Add(building);
             return building;
-        }
+        }*/
 
-        internal void RegisterSimHashes(Dictionary<SimHashes, string> hashTable, Dictionary<string, object> hashTableReverse)
+        public void RegisterSimHashes()
         {
             foreach (var e in elements)
             {
-                e.RegisterSimHashes(hashTable, hashTableReverse);
+                e.RegisterSimHashes(PipLib.simHashTable, PipLib.simHashReverseTable);
             }
         }
 
@@ -128,10 +148,10 @@ namespace PipLib.Mod
             {
                 e.RegisterStrings();
             }
-            foreach (var b in buildings)
+            /* foreach (var b in buildings)
             {
                 b.RegisterStrings();
-            }
+            } */
         }
 
         internal void RegisterAttributes()
@@ -141,7 +161,6 @@ namespace PipLib.Mod
                 e.RegisterAttributes();
             }
         }
-        */
 
         public override string ToString()
         {

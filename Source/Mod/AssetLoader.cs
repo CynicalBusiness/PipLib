@@ -26,12 +26,12 @@ namespace PipLib.Mod
         /// </summary>
         /// <param name="mod">The mod to get</param>
         /// <returns>The fully directory path to the assembly</returns>
-        public static string GetAssemblyDirectory(PipMod mod)
+        public static string GetAssemblyDirectory(IPipMod mod)
         {
             return Path.GetDirectoryName(Assembly.GetAssembly(mod.GetType()).Location);
         }
 
-        public static Texture2D GetTexture(PipMod mod, string name)
+        public static Texture2D GetTexture(IPipMod mod, string name)
         {
             string filepath = Path.Combine(Path.Combine(GetAssemblyDirectory(mod), TEXTURES), name + ".png");
             Texture2D tex = null;

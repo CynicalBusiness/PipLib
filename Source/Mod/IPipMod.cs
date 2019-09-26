@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace PipLib.Mod
 {
@@ -19,5 +16,7 @@ namespace PipLib.Mod
         void PreInitialize();
         void Initialize();
         void PostInitialize();
+
+        IEnumerable<ElementFactory> GetElements();
     }
 }
