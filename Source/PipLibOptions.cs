@@ -28,7 +28,7 @@ namespace PipLib
 
         public override string ToString()
         {
-            return string.Format("PipLibOptions[doHijackLogger={0},loggingVerbosity={1},enableDeveloperConsole={2]]", doHijackLogger, loggingVerbosity, enableDeveloperConsole);
+            return string.Format("PipLibOptions[doHijackLogger={0},loggingVerbosity={1},enableDeveloperConsole={2}]", doHijackLogger, loggingVerbosity, enableDeveloperConsole);
         }
 
         public enum LoggingVerbosity

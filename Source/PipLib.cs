@@ -29,10 +29,10 @@ namespace PipLib
             Options = POptions.ReadSettings<PipLibOptions>() ?? new PipLibOptions();
             if (Options.enableDeveloperConsole)
             {
-                Debug.developerConsoleVisible = true;
+                UnityEngine.Debug.LogError("Invoking error to show the developer console");
             }
-
             Logger.Info("Using options: {0}", Options.ToString());
+
             Logger.Info("Hooked into harmony, watching for assemblies to be patched in...");
         }
 
