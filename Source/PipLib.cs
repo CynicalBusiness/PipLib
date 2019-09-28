@@ -4,6 +4,7 @@ using System.Reflection;
 using Harmony;
 using PeterHan.PLib.Options;
 using PipLib.Mod;
+using PeterHan.PLib;
 
 namespace PipLib
 {
@@ -25,6 +26,7 @@ namespace PipLib
 
         public static void PrePatch(HarmonyInstance _)
         {
+            PUtil.LogModInit();
             POptions.RegisterOptions(typeof(PipLibOptions));
             Options = POptions.ReadSettings<PipLibOptions>() ?? new PipLibOptions();
             if (Options.enableDeveloperConsole)
