@@ -41,6 +41,15 @@ namespace PipLib.Mod
             private static void Postfix()
             {
                 ModManager.Initialize();
+            }
+        }
+
+        [HarmonyPatch(typeof(Db), "Initialize")]
+        private static class PatchLast_Db_Initialize
+        {
+            [HarmonyPriority(Priority.Last)]
+            private static void Postfix()
+            {
                 ModManager.PostInitialize();
             }
         }

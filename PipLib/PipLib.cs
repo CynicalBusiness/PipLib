@@ -44,6 +44,7 @@ namespace PipLib
         public static void OnLoad ()
         {
             LocString.CreateLocStringKeys(typeof(global::PipLib.STRINGS.ELEMENTS));
+            LocString.CreateLocStringKeys(typeof(global::PipLib.STRINGS.RESEARCH));
         }
 
         public static IEnumerable<IPipMod> Mods => ModManager.mods;
