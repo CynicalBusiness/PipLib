@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Source", "Source\Source.csproj", "{37F52272-F162-40A1-BA1F-681D21420A45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipLib", "PipLib\PipLib.csproj", "{37F52272-F162-40A1-BA1F-681D21420A45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

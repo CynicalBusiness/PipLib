@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(ProjectPackageDir)\MSBuild.Extension.Pack.1.9.1\build\net35\MSBuild.Extension.Pack.targets" Condition="Exists('$(ProjectPackageDir)\MSBuild.Extension.Pack.1.9.1\build\net35\MSBuild.Extension.Pack.targets')" />
+  <Import Project="$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.targets" Condition="Exists('$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.targets')" />
+
+  <ItemGroup>
+    <Content Include="lib/*.LICENSE"/>
+  </ItemGroup>
+
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(ProjectPackageDir)\MSBuild.Extension.Pack.1.9.1\build\net35\MSBuild.Extension.Pack.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(ProjectPackageDir)s\MSBuild.Extension.Pack.1.9.1\build\net35\MSBuild.Extension.Pack.targets'))" />
+    <Error Condition="!Exists('$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.props')" Text="$([System.String]::Format('$(ErrorText)', '$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.props'))" />
+    <Error Condition="!Exists('$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.targets'))" />
+  </Target>
+
+  <Target Name="BeforeBuild">
+    <PropertyGroup>
+      <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    </PropertyGroup>
+    <ItemGroup>
+      <AssemblyInfoFiles Include="Properties\AssemblyInfo.cs" />
+    </ItemGroup>
+    <Message Text="Applying properties and copying files..." />
+    <Copy SourceFiles="@(Content)" DestinationFolder="$(OutDir)" />
+    <MSBuild.ExtensionPack.Framework.AssemblyInfo
+      AssemblyInfoFiles="@(AssemblyInfoFiles)"
+      AssemblyBuildNumberType="YearWeekDay"
+      FirstDayOfWeek="Sunday"
+      AssemblyFileBuildNumberType="YearWeekDay"
+      AssemblyFileRevisionType="AutoIncrement" />
+  </Target>
+
+  <Target Name="AfterBuild">
+    <ItemGroup>
+      <LicenseI Include="$(SolutionDir)/LICENSE" />
+      <LicenseO Include="$(OutputPath)/$(AssemblyName).LICENSE" />
+      <ResourceFiles Include="$(ProjectDir)\res\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(LicenseI)" DestinationFiles="@(LicenseO)" />
+    <Copy
+      SourceFiles="@(ResourceFiles)"
+      DestinationFolder="$(OutputPath)\%(RecursiveDir)"
+      SkipUnchangedFiles="True" />
+  </Target>
+
+  <Target Name="Prepare" BeforeTargets="PrepareForBuild">
+    <DownloadFile
+      SourceUrl="https://github.com/peterhaneve/ONIMods/releases/latest/download/PLib.dll"
+      DestinationFolder="$(ProjectLibDir)"
+      Condition="!Exists('$(ProjectLibDir)\PLib.dll')"/>
+    <DownloadFile
+      SourceUrl="https://raw.githubusercontent.com/peterhaneve/ONIMods/master/LICENSE"
+      DestinationFolder="$(ProjectLibDir)"
+      DestinationFileName="PLib.LICENSE"
+      Condition="!Exists('$(ProjectLibDir)\PLib.LICENSE')"/>
+  </Target>
+</Project>
