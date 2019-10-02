@@ -1,5 +1,5 @@
 
-![Piplib](raw/master/PipLib/res/logo.png)
+![Piplib](/PipLib/res/logo.png)
 
 **Powerful Modding Library for Klei's _Oxygen Not Included_**
 
