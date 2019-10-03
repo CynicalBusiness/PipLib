@@ -40,16 +40,4 @@
       DestinationFolder="$(OutputPath)\%(RecursiveDir)"
       SkipUnchangedFiles="True" />
   </Target>
-
-  <Target Name="Prepare" BeforeTargets="PrepareForBuild">
-    <DownloadFile
-      SourceUrl="https://github.com/peterhaneve/ONIMods/releases/latest/download/PLib.dll"
-      DestinationFolder="$(ProjectLibDir)"
-      Condition="!Exists('$(ProjectLibDir)\PLib.dll')"/>
-    <DownloadFile
-      SourceUrl="https://raw.githubusercontent.com/peterhaneve/ONIMods/master/LICENSE"
-      DestinationFolder="$(ProjectLibDir)"
-      DestinationFileName="PLib.LICENSE"
-      Condition="!Exists('$(ProjectLibDir)\PLib.LICENSE')"/>
-  </Target>
 </Project>

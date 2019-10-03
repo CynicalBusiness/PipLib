@@ -41,3 +41,5 @@ guidelines will appear when submitting an issue.
 ----
 Designed and Developed by [@CynicalBusiness](/CynicalBusiness).  
 Reach me on Discord at `CynicalBusiness#0001` or the [Oxygen Not Included Discord Server](https://discord.gg/EBncbX2).
+
+_Myra ta Hayzel; Pal, Kifitae te Entra en na Loka_

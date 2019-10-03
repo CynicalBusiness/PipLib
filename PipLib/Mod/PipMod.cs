@@ -8,20 +8,6 @@ namespace PipLib.Mod
 {
     /// <summary>
     /// The main abstract PipLib mod.
-    /// <example>
-    /// Implmented as such:
-    /// <code>
-    /// public class YourMod : PipMod
-    /// {
-    ///     public YourMod () : base("YourMod", "YM") { }
-    ///
-    ///     public void Load ()
-    ///     {
-    ///         // Do your stuff here
-    ///     }
-    /// }
-    /// </code>
-    /// </example>
     /// </summary>
     public abstract class PipMod : IPipMod
     {

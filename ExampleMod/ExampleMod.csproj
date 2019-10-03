@@ -28,7 +28,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Build\$(Configuration)</OutputPath>
+    <OutputPath>..\Build\$(Configuration)\$(AssemblyName)</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -46,7 +46,7 @@
   <ItemGroup>
     <!-- Add this reference manually to wherever PipLib has been placed -->
     <Reference Include="PipLib">
-      <HintPath>$(SolutionDir)/Build/Release/PipLib.dll</HintPath>
+      <HintPath>$(SolutionDir)/Build/Release/PipLib/PipLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

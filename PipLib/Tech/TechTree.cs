@@ -49,7 +49,7 @@ namespace PipLib.Tech
         /// </summary>
         /// <param name="tier">The tier to fetch</param>
         /// <returns>The tier costs</returns>
-        /// <exception cref="OutOfBoundsException">If the tier is greater than the total number of tiers</exception>
+        /// <exception cref="System.IndexOutOfRangeException">If the tier is greater than the total number of tiers</exception>
         public static Dictionary<string, float> GetTierCosts (int tier)
         {
             var tierCostList = GetTechTiers()[tier];
@@ -63,11 +63,21 @@ namespace PipLib.Tech
             return tierCosts;
         }
 
+        /// <summary>
+        /// Gets a tech by ID, including modded tech
+        /// </summary>
+        /// <param name="id">The ID</param>
+        /// <returns>The tech, or <c>null</c> if not found</returns>
         public static global::Tech GetTech (string id)
         {
             return Instance.db.Techs.Get(id);
         }
 
+        /// <summary>
+        /// Creates a new <see cref="global::Tech"/> with the given ID
+        /// </summary>
+        /// <param name="id">The ID to create with</param>
+        /// <returns>The newly created tech</returns>
         public static global::Tech CreateTech (string id)
         {
             string locname = LOCNAME_TECH + id.ToUpper();
@@ -80,6 +90,11 @@ namespace PipLib.Tech
             return tech;
         }
 
+        /// <summary>
+        /// Adds a requirement to the given <see cref="global::Tech"/>
+        /// </summary>
+        /// <param name="unlocked">The tech that will be unlocked</param>
+        /// <param name="required">The tech that is required</param>
         public static void AddRequirement (global::Tech unlocked, global::Tech required)
         {
             required.unlockedTech.Add(unlocked);
@@ -94,6 +109,11 @@ namespace PipLib.Tech
             requiredNode.edges.Add(edge);
         }
 
+        /// <summary>
+        /// Overrides the tier of a given <see cref="global::Tech"/> to the given value
+        /// </summary>
+        /// <param name="tech">The tech</param>
+        /// <param name="tier">The tier to set</param>
         public static void SetTier (global::Tech tech, int tier)
         {
             tech.tier = tier;

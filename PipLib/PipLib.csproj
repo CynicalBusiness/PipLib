@@ -15,6 +15,8 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <!-- CS1591 is a warning about a missing doc comment, which fails everywhere -->
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -31,10 +33,15 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Build\Release\</OutputPath>
+    <OutputPath>..\Build\$(Configuration)\$(AssemblyName)</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -87,5 +94,17 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.props')" Text="$([System.String]::Format('$(ErrorText)', '$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.props'))" />
     <Error Condition="!Exists('$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.targets'))" />
+  </Target>
+
+  <Target Name="Prepare" BeforeTargets="PrepareForBuild">
+    <DownloadFile
+      SourceUrl="https://github.com/peterhaneve/ONIMods/releases/latest/download/PLib.dll"
+      DestinationFolder="$(ProjectLibDir)"
+      Condition="!Exists('$(ProjectLibDir)\PLib.dll')"/>
+    <DownloadFile
+      SourceUrl="https://raw.githubusercontent.com/peterhaneve/ONIMods/master/LICENSE"
+      DestinationFolder="$(ProjectLibDir)"
+      DestinationFileName="PLib.LICENSE"
+      Condition="!Exists('$(ProjectLibDir)\PLib.LICENSE')"/>
   </Target>
 </Project>
