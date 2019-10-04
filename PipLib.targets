@@ -21,6 +21,7 @@
     <Message Text="Applying properties and copying files..." />
     <Copy SourceFiles="@(Content)" DestinationFolder="$(OutDir)" />
     <MSBuild.ExtensionPack.Framework.AssemblyInfo
+      Condition="$(Configuration)=='Debug'"
       AssemblyInfoFiles="@(AssemblyInfoFiles)"
       AssemblyBuildNumberType="YearWeekDay"
       FirstDayOfWeek="Sunday"
