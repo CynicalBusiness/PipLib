@@ -9,20 +9,20 @@
 
 ----
 
-## Features
+# Features
 PipLib, on its own, does not do much to change up the game (there are some though, see below), but it provides a powerful
 foundation for mods to add new and exciting things to Oxygen Not Included.
 
 - **Streamlined Mod Loading**
   - Have your mod loaded by the library, not the other way around
-  - Simple mod class to implement rather than having to register your mod with anything
+  - Simply mod class to implement rather than having to register your mod with anything
 - **Custom Elements**
   - Create new elements and substances within the game with ease
 - **Overhauled Research Tree**
   - New dynamic research tree that is built on-the-fly instead of hard-coded in the assets
   - Ability to add new custom techs for your new stuff!
 
-### Changes To the Game
+### Changes to the Game
 PipLib does make some minor changes to the game to facilitate new things.
 
 - **The vanilla research tree has been reorganized:** This is a result of the tree now being dynamic
@@ -31,6 +31,9 @@ PipLib does make some minor changes to the game to facilitate new things.
 ## Usage
 To learn how to create mods using PipLib, take a look at the examples located in [ExampleMod](examplemod), namely
 `ExampleMod.cs` and `Examplemod.csproj`.
+
+**Do not** pack PipLib with your mod: this _will_ break things!. Instead, upload your mod by itself to the workshop, then use the `Add/Remove Required Items` option when editing the item.
+
 
 ## Contributing
 *Please bear in mind when contributing: this project was designed to work in Visual Studio Code `>=1.38`, not Visual Studio.*
