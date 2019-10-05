@@ -1,4 +1,5 @@
 using Database;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -81,13 +82,22 @@ namespace PipLib.Tech
         public static global::Tech CreateTech (string id)
         {
             string locname = LOCNAME_TECH + id.ToUpper();
-            var tech = new global::Tech(id, Instance.Techs, Strings.Get(locname + ".NAME"), Strings.Get(locname + ".DESC"), new ResourceTreeNode(){
-                nodeX = ORIGIN.nodeX,
-                nodeY = ORIGIN.nodeY,
-                width = ORIGIN.width,
-                height = ORIGIN.height
-            });
-            return tech;
+            var existingTech = Instance.Techs.TryGet(id);
+            if (existingTech != null)
+            {
+                return existingTech;
+            }
+            else
+            {
+                var tech = new global::Tech(id, Instance.Techs, Strings.Get(locname + ".NAME"), Strings.Get(locname + ".DESC"), new ResourceTreeNode(){
+                    nodeX = ORIGIN.nodeX,
+                    nodeY = ORIGIN.nodeY,
+                    width = ORIGIN.width,
+                    height = ORIGIN.height
+                });
+                Techs.TECH_GROUPING.Add(id, new string[0]);
+                return tech;
+            }
         }
 
         /// <summary>
@@ -118,6 +128,26 @@ namespace PipLib.Tech
         {
             tech.tier = tier;
             tech.costsByResearchTypeID = GetTierCosts(tier);
+        }
+
+        /// <summary>
+        /// Adds an item to the given tech, by ID
+        /// </summary>
+        /// <param name="techID">The ID of the tech to add to</param>
+        /// <param name="prefabID">The ID of the prefab to add</param>
+        public static void AddTechItem (string techID, string prefabID)
+        {
+            if (Techs.TECH_GROUPING.TryGetValue(techID, out var techItems))
+            {
+                var len = techItems.Length;
+                Array.Resize(ref techItems, len + 1);
+                techItems[len] = prefabID;
+                Techs.TECH_GROUPING[techID] = techItems;
+            }
+            else
+            {
+                Logger.Error("Tried to add prefab '{0}' to non-existant tech '{1}'", prefabID, techID);
+            }
         }
 
         internal static void Create (Techs techs)
