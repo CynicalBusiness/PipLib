@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Harmony;
-using PeterHan.PLib;
-using PeterHan.PLib.Options;
 using PipLib.Mod;
+using PipLib.Options;
+using Newtonsoft.Json;
 using static PipLib.PLUtil;
 
 // TODO do something like PLib to manage multiple versions
@@ -13,7 +13,6 @@ namespace PipLib
 {
     public static class PipLib
     {
-
         public static readonly string Version = GetCurrentVersion();
         public static readonly string Name = GetCurrentName();
 
@@ -21,11 +20,17 @@ namespace PipLib
 
         public static PLOptions Options { get; private set; }
 
+        static PipLib()
+        {
+            // there are cases, such as the logs that output during options reading, that things want to access this
+            // before it has loaded
+            // so, we're going to initialize it to the defaults first, then overwrite it
+            Options = new PLOptions(){ doHijackLogger = false };
+        }
+
         public static void PrePatch(HarmonyInstance _)
         {
-            PUtil.LogModInit();
-            POptions.RegisterOptions(typeof(PLOptions));
-            Options = POptions.ReadSettings<PLOptions>() ?? new PLOptions();
+            Options = OptionsManager.LoadOptions<PLOptions>();
             if (Options.enableDeveloperConsole)
             {
                 UnityEngine.Debug.LogError("Invoking error to show the developer console");

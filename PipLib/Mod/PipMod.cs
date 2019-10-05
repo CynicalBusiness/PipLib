@@ -1,5 +1,4 @@
-﻿using PeterHan.PLib.Options;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -49,13 +48,13 @@ namespace PipLib.Mod
         protected void RegisterOptions (Type options)
         {
             OptionsType = options;
-            POptions.RegisterOptions(options);
+            // POptions.RegisterOptions(options);
         }
 
-        protected T ReadOptions<T> () where T : class
+        /* protected T ReadOptions<T> () where T : class
         {
             return POptions.ReadSettings<T>();
-        }
+        } */
 
         public virtual void Load()
         {

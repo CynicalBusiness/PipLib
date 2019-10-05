@@ -1,4 +1,3 @@
-using PeterHan.PLib.Options;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -49,10 +48,10 @@ namespace PipLib.Mod
             foreach (var mod in mods)
             {
                 Logger.Info("Loading {0} v{1}", mod.Name, mod.Version);
-                if (mod.OptionsType != null)
+                /* if (mod.OptionsType != null)
                 {
                     POptions.RegisterOptions(mod.OptionsType);
-                }
+                } */
                 mod.Load();
             }
         }

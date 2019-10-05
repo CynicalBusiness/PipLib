@@ -68,5 +68,15 @@ namespace PipLib.Mod
                 ModManager.PostLoad();
             }
         }
+
+        [HarmonyPatch(typeof(ModUtil), "AddKAnimMod")]
+        private static class Patch_ModUtil_AddKAnimMod
+        {
+            // all this does is output the name of the loaded animations for debugging
+            private static void Postfix(KAnimFile __result)
+            {
+                ModManager.Logger.Verbose("Loaded anim '{0}'", __result.name);
+            }
+        }
     }
 }

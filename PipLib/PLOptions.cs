@@ -1,22 +1,17 @@
-﻿using Newtonsoft.Json;
-using PeterHan.PLib;
+﻿using YamlDotNet.Serialization;
 
 namespace PipLib
 {
-    [JsonObject(MemberSerialization.OptIn)]
     public class PLOptions
     {
 
-        [Option("Replace Default Logger", "Whether or not the default logger should be completely replaced.")]
-        [JsonProperty]
+        // [Option("Replace Default Logger", "Whether or not the default logger should be completely replaced.")]
         public bool doHijackLogger { get; set; }
 
-        [Option("Logging Verbosity", "The verbosity at which logs are written")]
-        [JsonProperty]
+        // [Option("Logging Verbosity", "The verbosity at which logs are written")]
         public LoggingVerbosity loggingVerbosity { get; set; }
 
-        [Option("Enable Developer Console", "Whether or not to enable the Unity developer console")]
-        [JsonProperty]
+        // [Option("Enable Developer Console", "Whether or not to enable the Unity developer console")]
         public bool enableDeveloperConsole { get; set; }
 
         public PLOptions()
@@ -33,11 +28,11 @@ namespace PipLib
 
         public enum LoggingVerbosity
         {
-            [Option("Informational", "The least amount of output: only INFO, WARN, and ERR")]
+            // [Option("Informational", "The least amount of output: only INFO, WARN, and ERR")]
             Info,
-            [Option("Verbose", "Inclues verbose output (i.e. VERB) in additional to all informational output")]
+            // [Option("Verbose", "Inclues verbose output (i.e. VERB) in additional to all informational output")]
             Verbose,
-            [Option("Debugging", "Output will be extremely verbose and output that is not normally included is printed")]
+            // [Option("Debugging", "Output will be extremely verbose and output that is not normally included is printed")]
             Debug
         }
     }

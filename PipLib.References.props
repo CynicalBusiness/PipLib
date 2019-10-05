@@ -21,9 +21,5 @@
       <HintPath>$(GameLibDir)\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="PeterHan.PLib">
-      <HintPath>.\lib\PLib.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
 </Project>

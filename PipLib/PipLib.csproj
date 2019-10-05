@@ -71,12 +71,10 @@
 
   <ItemGroup>
     <None Include=".editorconfig" />
-    <None Include="ILMerge.props" />
     <None Include="packages.config" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="ILMergeOrder.txt" />
     <Content Include="$(ProjectLibDir)\*.LICENSE" />
   </ItemGroup>
 
@@ -85,26 +83,4 @@
   </ItemGroup>
 
   <Import Project="..\PipLib.targets"/>
-  <Import Project="$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.props" Condition="Exists('$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.props')" />
-  <Import Project="$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.targets" Condition="Exists('$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.targets')" />
-
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.props')" Text="$([System.String]::Format('$(ErrorText)', '$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.props'))" />
-    <Error Condition="!Exists('$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(ProjectPackageDir)\MSBuild.ILMerge.Task.1.0.5\build\MSBuild.ILMerge.Task.targets'))" />
-  </Target>
-
-  <Target Name="Prepare" BeforeTargets="PrepareForBuild">
-    <DownloadFile
-      SourceUrl="https://github.com/peterhaneve/ONIMods/releases/latest/download/PLib.dll"
-      DestinationFolder="$(ProjectLibDir)"
-      Condition="!Exists('$(ProjectLibDir)\PLib.dll')"/>
-    <DownloadFile
-      SourceUrl="https://raw.githubusercontent.com/peterhaneve/ONIMods/master/LICENSE"
-      DestinationFolder="$(ProjectLibDir)"
-      DestinationFileName="PLib.LICENSE"
-      Condition="!Exists('$(ProjectLibDir)\PLib.LICENSE')"/>
-  </Target>
 </Project>
