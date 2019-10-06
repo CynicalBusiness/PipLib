@@ -18,6 +18,7 @@ namespace PipLib.Elements
             var len = tags.Length;
             Array.Resize(ref tags, len + 1);
             tags[len] = tag;
+            element.oreTags = tags;
         }
 
         /// <summary>
