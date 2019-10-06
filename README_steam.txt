@@ -2,8 +2,7 @@
 [b]Powerful Modding Library for Klei's [i]Oxygen Not Included[/i][/b]
 
 [h1]Features[/h1]
-PipLib, on its own, does not do much to change up the game (there are some though, see below), but it provides a powerful
-foundation for mods to add new and exciting things to Oxygen Not Included.
+PipLib, on its own, does not do much to change up the game (there are some though, see below), but it provides a powerful foundation for mods to add new and exciting things to Oxygen Not Included.
 [list]
 [*][b]Streamlined Mod Loading[/b]
   [list]
@@ -19,6 +18,11 @@ foundation for mods to add new and exciting things to Oxygen Not Included.
   [*] New dynamic research tree that is built on-the-fly instead of hard-coded in the assets
   [*] Ability to add new custom techs for your new stuff!
   [/list]
+[*][b]Utilities for Buildings and Tags[/b]
+  [list]
+  [*] Utiltiy methods for buildings, such as adding to plan screens and techs.
+  [*] Ability to easily augment tags, both custom and vanilla.
+  [/list]
 [/list]
 
 
@@ -32,6 +36,8 @@ PipLib does make some minor changes to the game to facilitate new things.
 
 [h1]Usage[/h1]
 To learn how to create mods using PipLib, take a look at the examples located in [url=https://lab.vevox.io/games/oxygen-not-included/piplib/tree/master/ExampleMod]ExampleMod[/url], namely [b]ExampleMod.cs[/b] and [b]Examplemod.csproj[/b].
+
+You can find both non-Steam mod versions as well as the release DLL/XML on the [url=https://lab.vevox.io/games/oxygen-not-included/piplib/-/tags]GitLab[/url].
 
 [b]Do not[/b] pack PipLib with your mod: this [i]will[/i] break things!. Instead, upload your mod by itself to the workshop, then use the [b]Add/Remove Required Items[/b] option when editing the item.
 

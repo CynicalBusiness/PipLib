@@ -21,6 +21,9 @@ foundation for mods to add new and exciting things to Oxygen Not Included.
 - **Overhauled Research Tree**
   - New dynamic research tree that is built on-the-fly instead of hard-coded in the assets
   - Ability to add new custom techs for your new stuff!
+- **Utilities for Buildings and Tags**
+  - Utiltiy methods for buildings, such as adding to plan screens and techs.
+  - Ability to easily augment tags, both custom and vanilla.
 
 ### Changes to the Game
 PipLib does make some minor changes to the game to facilitate new things.
@@ -31,6 +34,8 @@ PipLib does make some minor changes to the game to facilitate new things.
 ## Usage
 To learn how to create mods using PipLib, take a look at the examples located in [ExampleMod](examplemod), namely
 `ExampleMod.cs` and `Examplemod.csproj`.
+
+You can find both non-Steam mod versions as well as the release DLL/XML on the [GitLab](https://lab.vevox.io/games/oxygen-not-included/piplib/-/tags).
 
 **Do not** pack PipLib with your mod: this _will_ break things!. Instead, upload your mod by itself to the workshop, then use the `Add/Remove Required Items` option when editing the item.
 
