@@ -39,5 +39,9 @@
       SourceFiles="@(ResourceFiles)"
       DestinationFolder="$(OutputPath)\%(RecursiveDir)"
       SkipUnchangedFiles="True" />
+
+    <ZipDirectory Condition="$(Configuration) == 'Release'"
+      DestinationFile="$(OutputPath)/../$(AssemblyName).zip"
+      SourceDirectory="$(OutputPath)"/>
   </Target>
 </Project>
