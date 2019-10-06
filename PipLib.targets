@@ -24,8 +24,7 @@
       Condition="$(Configuration)=='Debug'"
       AssemblyInfoFiles="@(AssemblyInfoFiles)"
       FirstDayOfWeek="Sunday"
-      AssemblyFileBuildNumberType="YearWeekDay"
-      AssemblyFileRevisionType="AutoIncrement" />
+      AssemblyFileBuildNumberType="YearWeekDay"/>
   </Target>
 
   <Target Name="AfterBuild">
