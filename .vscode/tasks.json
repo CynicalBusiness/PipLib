@@ -8,6 +8,7 @@
             "type": "shell",
             "command": "msbuild",
             "args": [
+                "PipLib",
                 // Ask msbuild to generate full paths for file names.
                 "/p:GenerateFullPaths=true",
                 "/t:Build",
@@ -27,6 +28,7 @@
             "type": "shell",
             "command": "msbuild",
             "args": [
+                "PipLib",
                 "/p:GenerateFullPaths=true",
                 "/p:Configuration=Release",
                 "/t:Build",
