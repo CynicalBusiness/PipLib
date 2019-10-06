@@ -54,7 +54,8 @@ namespace PipLib.Building
             var menu = GetPlanMenuByCategory(category);
             if (menu != null)
             {
-                AddToPlanMenu(buildingID, category, menu.IndexOf(afterID));
+                var i = menu.IndexOf(afterID);
+                AddToPlanMenu(buildingID, category, i < 0 ? -1 : i + 1);
             }
         }
 
