@@ -27,6 +27,11 @@ namespace PipLib.Elements
             /// </summary>
             public string anim;
 
+            /// <summary>
+            /// The name of the in-world material
+            /// </summary>
+            public string material;
+
             public StateData(ElementDef def)
             {
                 Def = def;
@@ -47,11 +52,6 @@ namespace PipLib.Elements
         /// The default color the element uses in pipes
         /// </summary>
         public Color32 conduitColor;
-
-        /// <summary>
-        /// The default animation
-        /// </summary>
-        public string anim;
 
         public readonly Dictionary<Element.State, StateData> states = new Dictionary<Element.State, StateData>();
 
@@ -97,29 +97,35 @@ namespace PipLib.Elements
         /// <param name="state">The state</param>
         /// <param name="substanceTable">The substance table</param>
         /// <returns>The created substance</returns>
-        public Substance CreateSubstance (Element.State state, SubstanceTable substanceTable)
+        internal Substance CreateSubstance (Element.State state, SubstanceTable substanceTable)
         {
             var simId = GetStateID(state);
+            var data = AddOrGetState(state);
 
+            // get material
             var material = ElementLoader.GetBaseMaterialForState(state, substanceTable);
             if (material != null)
             {
-                string materialName = simId.ToLower();
+                string materialName = data.material ?? simId.ToLower();
                 var tex = Assets.GetTexture(materialName);
                 if (tex != null)
                 {
                     material.mainTexture = tex;
                 }
+                else
+                {
+                    ElementManager.Logger.Verbose("No material texture '{0}', using default: {1}", materialName, material.mainTexture.name);
+                }
                 material.name = materialName;
             }
 
-            var data = AddOrGetState(state);
-            var animName = data.anim ?? anim;
+            // get anim
+            var animName = data.anim ?? GetAnim(state);
             KAnimFile animFile = Assets.Anims.Find(a => a.name == animName);
             if (animFile == null)
             {
                 animFile = ElementLoader.GetDefaultKAnimForState(state, substanceTable);
-                PipLib.Logger.Verbose("No anim '{0}' found, using default: {1}", animName, animFile.name);
+                ElementManager.Logger.Verbose("No anim '{0}' found, using default: {1}", animName, animFile.name);
             }
 
             return ModUtil.CreateSubstance(
@@ -131,6 +137,11 @@ namespace PipLib.Elements
                 ui_colour: color,
                 conduit_colour: color
             );
+        }
+
+        internal protected string GetAnim (Element.State state)
+        {
+            return GetStateID(state).ToLower() + PLUtil.SUFFIX_ANIM;
         }
     }
 }

@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using PipLib.Logging;
 
 namespace PipLib.Elements
 {
 
     public static class ElementManager
     {
+
+        internal static ILogger Logger = PipLib.Logger.Fork(nameof(ElementManager));
 
         /// <summary>
         /// Adds a tag to the given element

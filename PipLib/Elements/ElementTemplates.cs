@@ -17,7 +17,6 @@ namespace PipLib.Elements
             var def = ScriptableObject.CreateInstance<ElementDef>();
             def.PrefabID = id;
             def.InitDef();
-            def.anim = id.ToLower() + PLUtil.SUFFIX_ANIM;
             def.color = default;
             return def;
         }
