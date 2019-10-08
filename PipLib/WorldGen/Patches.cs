@@ -22,7 +22,7 @@ namespace PipLib.WorldGen
                 {
                     if (__instance.add.TryGetValue(keypair.Key, out var exists))
                     {
-                        exists.AddRange(keypair.Value);
+                        __instance[keypair.Key] = keypair.Value;
                     }
                     else
                     {
