@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using Harmony;
-using Klei;
-using PipLib.Mod;
 
 namespace PipLib.Elements
 {
@@ -12,67 +9,68 @@ namespace PipLib.Elements
     {
 
         [HarmonyPatch(typeof(Enum), "ToString", new Type[]{ })]
-        internal static class Patch_SimHashes_ToString
+        internal static class Patch_Enum_ToString
         {
             private static bool Prefix(ref Enum __instance, ref string __result)
             {
-                if (!(__instance is SimHashes))
+                if (__instance is SimHashes)
                 {
-                    return true;
+                    return !ElementManager.simHashTable.TryGetValue((SimHashes)__instance, out __result);
                 }
-
-                return !ElementLoader.simHashTable.TryGetValue((SimHashes)__instance, out __result);
+                return true;
             }
         }
 
         [HarmonyPatch(typeof(Enum), "Parse", new Type[] { typeof(Type), typeof(string), typeof(bool) })]
-        internal static class Patch_SimHashes_Parse
+        internal static class Patch_Enum_Parse
         {
             private static bool Prefix(Type enumType, string value, ref object __result)
             {
-                if (!enumType.Equals(typeof(SimHashes)))
+                if (enumType.Equals(typeof(SimHashes)))
                 {
-                    return true;
+                    return !ElementManager.simHashReverseTable.TryGetValue(value, out __result);
                 }
-
-                return !ElementLoader.simHashReverseTable.TryGetValue(value, out __result);
+                return true;
             }
         }
 
-        [HarmonyPatch(typeof(global::ElementLoader), "CollectElementsFromYAML")]
+        [HarmonyPatch(typeof(Enum), "GetValues", new Type[]{ typeof(Type) })]
+        private static class Patch_Enum_GetValues
+        {
+            private static void Postfix(Type enumType, ref Array __result)
+            {
+                if (enumType.Equals(typeof(SimHashes)))
+                {
+                    var count = ElementManager.simHashTable.Count;
+                    var res = new List<SimHashes>();
+                    res.AddRange((SimHashes[]) __result);
+                    res.AddRange(ElementManager.simHashTable.Keys);
+                    __result = res.ToArray();
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(ElementLoader), "CollectElementsFromYAML")]
         internal static class ElementLoader_CollectElementsFromYAML_Patch
         {
-            private static void Postfix(ref List<global::ElementLoader.ElementEntry> __result)
+            private static void Postfix(ref List<ElementLoader.ElementEntry> __result)
             {
-                PipLib.Logger.Info("Injecting elements...");
+                PipLib.Logger.Info("Loading elements...");
                 foreach (var mod in PipLib.Mods)
                 {
-                    var pooledList = ListPool<FileHandle, global::ElementLoader>.Allocate();
-                    FileSystem.GetFiles(Path.Combine(PLUtil.GetAssemblyDir(mod.GetType()), PLUtil.DIR_ELEMENTS), "*.yml", pooledList);
-                    foreach (var file in pooledList)
-                    {
-                        PipLib.Logger.Debug("loading elements from: {0}", file.full_path);
-                        var elementCollection = YamlIO.Parse<global::ElementLoader.ElementEntryCollection>(File.ReadAllText(file.full_path), Path.GetFileName(file.full_path));
-                        if (elementCollection != null)
-                        {
-                            __result.AddRange(elementCollection.elements);
-                        }
-                    }
-                    pooledList.Recycle();
+                    ElementManager.CollectElements(mod, ref __result);
                 }
-                PipLib.Logger.Info("Done injecting.");
             }
         }
 
-
-        [HarmonyPatch(typeof(global::ElementLoader), "Load")]
+        [HarmonyPatch(typeof(ElementLoader), "Load")]
         private static class Patch_ElementLoader_Load
         {
 
             private static void Prefix(ref Hashtable substanceList, SubstanceTable substanceTable)
             {
-                PipLib.Logger.Info("Registering substances...");
-                ElementLoader.RegisterSubstances(substanceList, substanceTable);
+                ElementManager.Logger.Info("Registering substances...");
+                ElementManager.RegisterSubstances(substanceList, substanceTable);
             }
         }
     }

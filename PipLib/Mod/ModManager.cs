@@ -1,3 +1,4 @@
+using PipLib.Elements;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -20,7 +21,7 @@ namespace PipLib.Mod
                     PipLib.Logger.Verbose("Found PipLib mod at: {0}, {1}", type.FullName, assembly.FullName);
                     modTypes.Add(type);
 
-                    Elements.ElementLoader.GetDefs(assembly.GetTypes());
+                    ElementManager.CollectDefs(assembly.GetTypes());
                 }
             }
         }
@@ -44,6 +45,8 @@ namespace PipLib.Mod
 
         internal static void Load()
         {
+            ElementManager.RegisterSimHashes();
+
             Logger.Info("Starting mod Load");
             foreach (var mod in mods)
             {

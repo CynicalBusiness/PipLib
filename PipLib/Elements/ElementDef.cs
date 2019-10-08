@@ -103,7 +103,7 @@ namespace PipLib.Elements
             var data = AddOrGetState(state);
 
             // get material
-            var material = ElementLoader.GetBaseMaterialForState(state, substanceTable);
+            var material = ElementManager.GetBaseMaterialForState(state, substanceTable);
             if (material != null)
             {
                 string materialName = data.material ?? simId.ToLower();
@@ -124,7 +124,7 @@ namespace PipLib.Elements
             KAnimFile animFile = Assets.Anims.Find(a => a.name == animName);
             if (animFile == null)
             {
-                animFile = ElementLoader.GetDefaultKAnimForState(state, substanceTable);
+                animFile = ElementManager.GetDefaultKAnimForState(state, substanceTable);
                 ElementManager.Logger.Verbose("No anim '{0}' found, using default: {1}", animName, animFile.name);
             }
 
