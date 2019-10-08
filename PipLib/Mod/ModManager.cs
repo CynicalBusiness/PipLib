@@ -15,18 +15,67 @@ namespace PipLib.Mod
 
         internal static Dictionary<IPipMod, Dictionary<PipMod.Step, List<MethodInfo>>> stepHandlers = new Dictionary<IPipMod, Dictionary<PipMod.Step, List<MethodInfo>>>();
 
+        internal static Dictionary<PipMod.TypeCollector, MethodInfo> collectors = new Dictionary<PipMod.TypeCollector, MethodInfo>();
+
+        internal static List<Tuple<bool, Assembly>> assmeblies = new List<Tuple<bool, Assembly>>();
+
         internal static void LoadTypes (Assembly assembly)
         {
+            bool isPipModAssembly = false;
+
             foreach (var type in assembly.GetTypes())
             {
-                if (typeof(IPipMod).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+                if (PipMod.TypeCollector.IsImpl(typeof(IPipMod), type))
                 {
                     PipLib.Logger.Verbose("Found PipLib mod at: {0}, {1}", type.FullName, assembly.FullName);
                     modTypes.Add(type);
+                    isPipModAssembly = true;
 
                     // TODO optimize these a bit?
-                    ElementManager.CollectDefs(assembly.GetTypes());
-                    BuildingManager.CollectBuildingInfo(assembly.GetTypes());
+                    // ElementManager.CollectDefs(assembly.GetTypes());
+                    // BuildingManager.CollectBuildingInfo(assembly.GetTypes());
+                }
+
+                foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+                {
+                    var p = method.GetParameters();
+                    if (p.Length != 1 || !p[0].ParameterType.Equals(typeof(Type)))
+                    {
+                        continue;
+                    }
+
+                    var collectorAttrs = (PipMod.TypeCollector[])method.GetCustomAttributes(typeof(PipMod.TypeCollector), true);
+                    if (collectorAttrs.Length > 0)
+                    {
+                        foreach (var c in collectorAttrs)
+                        {
+                            Logger.Verbose("Registed type collector {0} for type: {1}", method.DeclaringType.FullName, c.Predicate.FullName);
+                            collectors.Add(c, method);
+                        }
+                    }
+                }
+            }
+
+            assmeblies.Add(new Tuple<bool, Assembly>(isPipModAssembly, assembly));
+        }
+
+        internal static void CollectTypes ()
+        {
+            foreach (var assemblyEntry in assmeblies)
+            {
+                var isPipModAssembly = assemblyEntry.first;
+                var assembly = assemblyEntry.second;
+
+                foreach (var type in assembly.GetTypes())
+                {
+                    foreach (var colEntry in collectors)
+                    {
+                        if (PipMod.TypeCollector.IsImpl(colEntry.Key.Predicate, type) && (isPipModAssembly || colEntry.Key.CaptureNonPipTypes))
+                        {
+                            Logger.Debug("Invoked type collector {0} on: {1}", colEntry.Value.DeclaringType.FullName, type.FullName);
+                            colEntry.Value.Invoke(null, new object[1]{ type });
+                        }
+                    }
                 }
             }
         }

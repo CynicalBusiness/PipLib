@@ -61,6 +61,7 @@ namespace PipLib.Mod
             PostInitialize
         }
 
+        [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
         public sealed class OnStep : Attribute
         {
             public Step Step { get; private set;}
@@ -68,6 +69,25 @@ namespace PipLib.Mod
             public OnStep (Step step)
             {
                 Step = step;
+            }
+        }
+
+        [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+        public class TypeCollector : Attribute
+        {
+            public static bool IsImpl (Type type, Type t)
+            {
+                return type.IsAssignableFrom(t) && t.IsClass && !t.IsAbstract;
+            }
+
+            public Type Predicate { get; private set; }
+
+            public bool CaptureNonPipTypes { get; set; }
+
+            public TypeCollector (Type predicate)
+            {
+                Predicate = predicate;
+                CaptureNonPipTypes = false;
             }
         }
 

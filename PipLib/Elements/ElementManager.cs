@@ -140,20 +140,15 @@ namespace PipLib.Elements
             }
         }
 
-        internal static void CollectDefs (IEnumerable<Type> types)
+        [PipMod.TypeCollector(typeof(IElementConfig))]
+        internal static void CollectDefs (Type type)
         {
-            foreach (var type in types)
+            var ctor = type.GetConstructor(new Type[]{ });
+            if (ctor != null)
             {
-                if (typeof(IElementConfig).IsAssignableFrom(type) && type.IsClass && !type.IsAbstract)
-                {
-                    var ctor = type.GetConstructor(new Type[]{ });
-                    if (ctor != null)
-                    {
-                        Logger.Debug("Found ElementConfig at {0}", type.FullName);
-                        var config = (IElementConfig) ctor.Invoke(null);
-                        defs.Add(config.CreateElementDef());
-                    }
-                }
+                Logger.Debug("Found ElementConfig at {0}", type.FullName);
+                var config = (IElementConfig) ctor.Invoke(null);
+                defs.Add(config.CreateElementDef());
             }
         }
 
