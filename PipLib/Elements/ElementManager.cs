@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace PipLib.Elements
 {
-    internal static class ElementManager {
+    public static class ElementManager {
         internal static readonly Logging.ILogger Logger = PipLib.Logger.Fork(nameof(ElementManager));
 
         internal static Dictionary<SimHashes, string> simHashTable = new Dictionary<SimHashes, string>();
@@ -87,6 +87,7 @@ namespace PipLib.Elements
             }
         }
 
+        [PipMod.OnStep(PipMod.Step.Load)]
         internal static void RegisterSimHashes()
         {
             foreach (var def in defs)

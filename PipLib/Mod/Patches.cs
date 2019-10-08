@@ -35,12 +35,12 @@ namespace PipLib.Mod
 
             private static void Prefix()
             {
-                ModManager.PreInitialize();
+                ModManager.DoStep(PipMod.Step.PreInitialize);
             }
 
             private static void Postfix()
             {
-                ModManager.Initialize();
+                ModManager.DoStep(PipMod.Step.Initialize);
             }
         }
 
@@ -50,7 +50,7 @@ namespace PipLib.Mod
             [HarmonyPriority(Priority.Last)]
             private static void Postfix()
             {
-                ModManager.PostInitialize();
+                ModManager.DoStep(PipMod.Step.PostInitialize);
             }
         }
 
@@ -64,8 +64,8 @@ namespace PipLib.Mod
             private static void Postfix()
             {
                 ModManager.InstanciateAll();
-                ModManager.Load();
-                ModManager.PostLoad();
+                ModManager.DoStep(PipMod.Step.Load);
+                ModManager.DoStep(PipMod.Step.PostLoad);
             }
         }
 

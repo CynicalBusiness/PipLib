@@ -28,6 +28,49 @@ namespace PipLib.Mod
 
         }
 
+        public enum Step
+        {
+            /// <summary>
+            /// Mod is initially loaded, akin to <c>OnLoad</c>.
+            /// </summary>
+            /// <value></value>
+            Load,
+
+            /// <summary>
+            /// All mods have been loaded but the game has not started yet
+            /// </summary>
+            /// <value></value>
+            PostLoad,
+
+            /// <summary>
+            /// Just before <see cref="Db.Initialize"/>
+            /// </summary>
+            /// <value></value>
+            PreInitialize,
+
+            /// <summary>
+            /// Just after <see cref="Db.Initialize"/>
+            /// </summary>
+            /// <value></value>
+            Initialize,
+
+            /// <summary>
+            /// After all mods have completed <see cref="Initialize"/>
+            /// </summary>
+            /// <value></value>
+            PostInitialize
+        }
+
+        public sealed class OnStep : Attribute
+        {
+            public Step Step { get; private set;}
+
+            public OnStep (Step step)
+            {
+                Step = step;
+            }
+        }
+
         public abstract string Name { get; }
         public virtual string Prefix { get; private set; }
         public virtual Type OptionsType { get; private set; }
@@ -70,10 +113,12 @@ namespace PipLib.Mod
         {
 
         }
+
         public virtual void Initialize()
         {
 
         }
+
         public virtual void PostInitialize()
         {
 
