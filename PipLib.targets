@@ -28,6 +28,9 @@
   </Target>
 
   <Target Name="AfterBuild">
+    <PropertyGroup>
+      <OutputZip>$(OutputPath)..\$(AssemblyName).zip</OutputZip>
+    </PropertyGroup>
     <ItemGroup>
       <LicenseI Include="$(SolutionDir)/LICENSE" />
       <LicenseO Include="$(OutputPath)/$(AssemblyName).LICENSE" />
@@ -39,8 +42,10 @@
       DestinationFolder="$(OutputPath)\%(RecursiveDir)"
       SkipUnchangedFiles="True" />
 
+    <Delete Condition="$(Configuration) == 'Release' AND Exists('$(OutputZip)')"
+      Files="$(OutputZip)"/>
     <ZipDirectory Condition="$(Configuration) == 'Release'"
-      DestinationFile="$(OutputPath)/../$(AssemblyName).zip"
+      DestinationFile="$(OutputZip)"
       SourceDirectory="$(OutputPath)"/>
   </Target>
 </Project>
