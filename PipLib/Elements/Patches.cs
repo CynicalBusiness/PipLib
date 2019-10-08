@@ -41,7 +41,6 @@ namespace PipLib.Elements
             {
                 if (enumType.Equals(typeof(SimHashes)))
                 {
-                    var count = ElementManager.simHashTable.Count;
                     var res = new List<SimHashes>();
                     res.AddRange((SimHashes[]) __result);
                     res.AddRange(ElementManager.simHashTable.Keys);
