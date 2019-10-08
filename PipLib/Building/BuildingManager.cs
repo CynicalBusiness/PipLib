@@ -1,4 +1,6 @@
+using PipLib.Mod;
 using PipLib.Tech;
+using System;
 using System.Collections.Generic;
 using TUNING;
 
@@ -9,6 +11,9 @@ namespace PipLib.Building
     {
 
         internal static readonly Logging.ILogger Logger = PipLib.Logger.Fork(nameof(BuildingManager));
+
+        private static readonly List<BuildingInfo.TechRequirement> wantedTech = new List<BuildingInfo.TechRequirement>();
+        private static readonly List<BuildingInfo.OnPlanScreen> wantedOnScreen = new List<BuildingInfo.OnPlanScreen>();
 
         /// <summary>
         /// Adds the given building, by ID, to the given tech
@@ -57,6 +62,78 @@ namespace PipLib.Building
                 var i = menu.IndexOf(afterID);
                 AddToPlanMenu(buildingID, category, i < 0 ? -1 : i + 1);
             }
+        }
+
+        public static bool HasIDInPlanMenu(HashedString category, string id)
+        {
+            var menu = GetPlanMenuByCategory(category);
+            if (menu != null)
+            {
+                return menu.IndexOf(id) >= 0;
+            }
+            return false;
+        }
+
+        [PipMod.TypeCollector(typeof(IBuildingConfig))]
+        internal static void CollectBuildingInfo (Type type)
+        {
+            var attrsTech = (BuildingInfo.TechRequirement[])type.GetCustomAttributes(typeof(BuildingInfo.TechRequirement), true);
+            if (attrsTech.Length > 0)
+            {
+                wantedTech.AddRange(attrsTech);
+            }
+
+            var attrsCat = (BuildingInfo.OnPlanScreen[])type.GetCustomAttributes(typeof(BuildingInfo.OnPlanScreen), true);
+            if (attrsCat.Length > 0)
+            {
+                wantedOnScreen.AddRange(attrsCat);
+            }
+        }
+
+        [PipMod.OnStep(PipMod.Step.PostInitialize)]
+        internal static void Initialize ()
+        {
+            foreach (var tech in wantedTech)
+            {
+                AddToTech(tech.ID, tech.Tech);
+            }
+
+            TryWantedOnScreen(wantedOnScreen, wantedOnScreen.Count + 1);
+        }
+
+        private static void TryWantedOnScreen (List<BuildingInfo.OnPlanScreen> remaining, int lastCount)
+        {
+            if (remaining.Count >= lastCount)
+            {
+                foreach (var r in remaining)
+                {
+                    AddToPlanMenu(r.ID, r.Category, r.AtIndex);
+                }
+                return;
+            }
+            lastCount = remaining.Count;
+
+            var remainingNew = new List<BuildingInfo.OnPlanScreen>();
+            foreach (var r in remaining)
+            {
+                if (r.AfterId != null)
+                {
+                    if (HasIDInPlanMenu(r.Category, r.AfterId))
+                    {
+                        AddToPlanMenu(r.ID, r.Category, r.AfterId);
+                    }
+                    else
+                    {
+                        remainingNew.Add(r);
+                    }
+                }
+                else
+                {
+                    AddToPlanMenu(r.ID, r.Category, r.AtIndex);
+                }
+            }
+
+            TryWantedOnScreen(remainingNew, lastCount);
         }
 
         private static List<string> GetPlanMenuByCategory (HashedString category)
