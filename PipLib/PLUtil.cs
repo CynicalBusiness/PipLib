@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace PipLib
@@ -18,6 +19,12 @@ namespace PipLib
         /// The directory where element files are loaded from
         /// </summary>
         public const string DIR_ELEMENTS = "elements";
+
+        /// <summary>
+        /// A regex pattern to find `yaml`/`yml` files
+        /// </summary>
+        /// <returns></returns>
+        public static readonly Regex PATTERN_YAML = new Regex("\\.ya?ml$", RegexOptions.IgnoreCase);
 
         /// <summary>
         /// The suffix used for <see cref="KAnim"/>.

@@ -57,7 +57,7 @@ namespace PipLib.Elements
                 PipLib.Logger.Info("Loading elements...");
                 foreach (var mod in PipLib.Mods)
                 {
-                    ElementManager.CollectElements(mod, ref __result);
+                    ElementManager.CollectElements(System.IO.Path.Combine(PLUtil.GetAssemblyDir(mod.GetType()), PLUtil.DIR_ELEMENTS), ref __result);
                 }
             }
         }

@@ -152,29 +152,27 @@ namespace PipLib.Elements
             }
         }
 
-        internal static int CollectElements (IPipMod mod, ref List<ElementLoader.ElementEntry> results)
+        internal static int CollectElements (string dir, ref List<ElementLoader.ElementEntry> results)
         {
-            var found = new List<string>();
+            var foundElements = new List<string>();
 
-            var pooledList = ListPool<FileHandle, global::ElementLoader>.Allocate();
-            FileSystem.GetFiles(Path.Combine(PLUtil.GetAssemblyDir(mod.GetType()), PLUtil.DIR_ELEMENTS), "*.yml", pooledList);
-            foreach (var file in pooledList)
+            var files = Array.FindAll(Directory.GetFiles(dir), f => PLUtil.PATTERN_YAML.IsMatch(f));
+            foreach (var file in files)
             {
-                PipLib.Logger.Debug("loading elements from: {0}", file.full_path);
-                var elementCollection = YamlIO.Parse<global::ElementLoader.ElementEntryCollection>(File.ReadAllText(file.full_path), Path.GetFileName(file.full_path));
+                PipLib.Logger.Debug("loading elements from: {0}", file);
+                var elementCollection = YamlIO.Parse<ElementLoader.ElementEntryCollection>(File.ReadAllText(file), Path.GetFileName(file));
                 if (elementCollection != null)
                 {
                     results.AddRange(elementCollection.elements);
-                    found.AddRange(Array.ConvertAll(elementCollection.elements, e => e.elementId));
+                    foundElements.AddRange(Array.ConvertAll(elementCollection.elements, e => e.elementId));
                 }
             }
-            pooledList.Recycle();
 
-            if (found.Count > 0)
+            if (foundElements.Count > 0)
             {
-                Logger.Info("Loaded {0} element(s) from '{1}': {2}", found.Count, mod.Name, string.Join(",", found.ToArray()));
+                Logger.Verbose("Loaded {0} element(s) from '{1}': {2}", foundElements.Count, Path.GetDirectoryName(dir), string.Join(",", foundElements.ToArray()));
             }
-            return found.Count;
+            return foundElements.Count;
         }
     }
 }
