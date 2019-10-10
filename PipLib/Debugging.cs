@@ -13,6 +13,7 @@ namespace PipLib
             // if (PipLib.Options.doHijackLogger == true)
             // {
                 AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+                UnityEngine.Application.logMessageReceivedThreaded += OnLogMessageRecievedThreaded;
             // }
         }
 
@@ -33,6 +34,11 @@ namespace PipLib
                     PipLib.Logger.Error("Null exception, found: {0}", e.ExceptionObject);
                 }
             }
+        }
+
+        private static void OnLogMessageRecievedThreaded (string message, string stack, UnityEngine.LogType type)
+        {
+            PipLib.Logger.Debug("LogMessage: {0}({1}) at {2}", message, type.ToString(), stack);
         }
 
     }
