@@ -104,7 +104,7 @@ namespace PipLib.Elements
 
             // get material
             var material = ElementManager.GetBaseMaterialForState(state, substanceTable);
-            if (material != null)
+            if (material != null && (state == Element.State.Solid || data.material != null))
             {
                 string materialName = data.material ?? simId.ToLower();
                 var tex = Assets.GetTexture(materialName);
