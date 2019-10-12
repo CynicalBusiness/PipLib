@@ -161,7 +161,7 @@ namespace PipLib.Elements
             {
                 PipLib.Logger.Debug("loading elements from: {0}", file);
                 var elementCollection = YamlIO.Parse<ElementLoader.ElementEntryCollection>(File.ReadAllText(file), Path.GetFileName(file));
-                if (elementCollection != null)
+                if (elementCollection != null && elementCollection.elements != null)
                 {
                     results.AddRange(elementCollection.elements);
                     foundElements.AddRange(Array.ConvertAll(elementCollection.elements, e => e.elementId));
