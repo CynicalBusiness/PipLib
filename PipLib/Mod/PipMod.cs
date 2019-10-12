@@ -58,7 +58,12 @@ namespace PipLib.Mod
             /// After all mods have completed <see cref="Initialize"/>
             /// </summary>
             /// <value></value>
-            PostInitialize
+            PostInitialize,
+
+            /// <summary>
+            /// After the mod has been instanciated.
+            /// </summary>
+            PostInstanciate
         }
 
         [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]

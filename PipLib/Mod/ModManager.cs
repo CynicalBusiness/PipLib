@@ -56,25 +56,19 @@ namespace PipLib.Mod
                 }
             }
 
-            assmeblies.Add(new Tuple<bool, Assembly>(isPipModAssembly, assembly));
+            CollectTypes(assembly, isPipModAssembly);
         }
 
-        internal static void CollectTypes ()
+        internal static void CollectTypes (Assembly assembly, bool isPipModAssembly)
         {
-            foreach (var assemblyEntry in assmeblies)
+            foreach (var type in assembly.GetTypes())
             {
-                var isPipModAssembly = assemblyEntry.first;
-                var assembly = assemblyEntry.second;
-
-                foreach (var type in assembly.GetTypes())
+                foreach (var colEntry in collectors)
                 {
-                    foreach (var colEntry in collectors)
+                    if (PipMod.TypeCollector.IsImpl(colEntry.Key.Predicate, type) && (isPipModAssembly || colEntry.Key.CaptureNonPipTypes))
                     {
-                        if (PipMod.TypeCollector.IsImpl(colEntry.Key.Predicate, type) && (isPipModAssembly || colEntry.Key.CaptureNonPipTypes))
-                        {
-                            Logger.Debug("Invoked type collector {0} on: {1}", colEntry.Value.DeclaringType.FullName, type.FullName);
-                            colEntry.Value.Invoke(null, new object[1]{ type });
-                        }
+                        Logger.Debug("Invoked type collector {0} on: {1}", colEntry.Value.DeclaringType.FullName, type.FullName);
+                        colEntry.Value.Invoke(null, new object[1]{ type });
                     }
                 }
             }
@@ -95,8 +89,33 @@ namespace PipLib.Mod
                     Logger.Verbose("Instanced: {0}", mod.Name);
                     mods.Add(mod);
                     CollectSteps(mod, mod.GetType().Assembly.GetTypes());
+                    DoStep(PipMod.Step.PostInstanciate, mod);
                 }
             }
+        }
+
+        internal static KMod.Mod GetKMod (IPipMod mod)
+        {
+            return Global.Instance.modManager.mods.Find(m => m.label.id == System.IO.Path.GetFileName(PLUtil.GetAssemblyDir(mod.GetType())));
+        }
+
+        internal static void ModHadError (IPipMod mod, PipMod.Step step)
+        {
+            /* var kmod = GetKMod(mod);
+            if (kmod.label.distribution_platform != KMod.Label.DistributionPlatform.Dev && kmod.label.distribution_platform != KMod.Label.DistributionPlatform.Local)
+            {
+                kmod.status = KMod.Mod.Status.ReinstallPending;
+            }
+            Logger.Debug(kmod.status.ToString());
+            KMod.Manager.Dialog(
+                title: STRINGS.UI.FRONTEND.MOD_DIALOGS.STEP_FAILURE.TITLE,
+                text: string.Format(STRINGS.UI.FRONTEND.MOD_DIALOGS.STEP_FAILURE.MESSAGE, step.ToString().ToUpper(), mod.Name),
+                confirm_text: global::STRINGS.UI.FRONTEND.MOD_DIALOGS.RESTART.OK,
+                on_confirm: App.instance.Restart,
+                cancel_text: global::STRINGS.UI.FRONTEND.MOD_DIALOGS.RESTART.CANCEL,
+                on_cancel: PLUtil.NOOP,
+                activateBlackBackground: true
+            ); */
         }
 
         internal static void DoStep(PipMod.Step step)
@@ -116,15 +135,24 @@ namespace PipLib.Mod
                 Logger.Verbose("{0}: {1}", step.ToString().ToUpper(), mod.Name);
                 foreach (var method in methods)
                 {
-                    Logger.Debug("Invoking step handler in: {0}", method.DeclaringType.FullName);
-                    var args = method.GetParameters();
-                    if (args.Length > 0 && typeof(IPipMod).IsAssignableFrom(args[0].ParameterType))
+                    try
                     {
-                        method.Invoke(null, new object[]{ mod });
+                        Logger.Debug("Invoking step handler in: {0}", method.DeclaringType.FullName);
+                        var args = method.GetParameters();
+                        if (args.Length > 0 && typeof(IPipMod).IsAssignableFrom(args[0].ParameterType))
+                        {
+                            method.Invoke(null, new object[]{ mod });
+                        }
+                        else
+                        {
+                            method.Invoke(null, new object[0]);
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        method.Invoke(null, new object[0]);
+                        Logger.Error("Failed running {0} for '{1}' at {2}.{3}:", step.ToString().ToUpper(), mod.Name, method.DeclaringType.FullName, method.Name);
+                        Logger.Log(ex);
+                        ModHadError(mod, step);
                     }
                 }
             }

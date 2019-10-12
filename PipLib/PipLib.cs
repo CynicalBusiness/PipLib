@@ -18,20 +18,24 @@ namespace PipLib
 
         internal static readonly Logging.ILogger Logger = Logging.GlobalLogger.Get().Fork("PipLib");
 
-        public static PLOptions Options { get; private set; }
+        internal static LibOptions.Provider OptionsProvider { get; private set; }
+
+        public static LibOptions Options => OptionsProvider.Options;
 
         static PipLib()
         {
             // there are cases, such as the logs that output during options reading, that things want to access this
             // before it has loaded
             // so, we're going to initialize it to the defaults first, then overwrite it
-            Options = new PLOptions(){ doHijackLogger = false };
+            OptionsProvider = new LibOptions.Provider();
         }
 
         public static void PrePatch(HarmonyInstance _)
         {
-            Options = OptionsManager.LoadOptions<PLOptions>();
-            if (Options.enableDeveloperConsole)
+            // this is weird and should not be done in normal mods
+            OptionsManager.MergeOptions(OptionsProvider);
+            OptionsManager.SaveOptions(OptionsProvider);
+            if (Options.EnableDeveloperConsole)
             {
                 UnityEngine.Debug.LogError("Invoking error to show the developer console");
             }

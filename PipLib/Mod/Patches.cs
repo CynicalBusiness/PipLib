@@ -64,7 +64,6 @@ namespace PipLib.Mod
             private static void Postfix()
             {
                 ModManager.InstanciateAll();
-                ModManager.CollectTypes();
                 ModManager.DoStep(PipMod.Step.Load);
                 ModManager.DoStep(PipMod.Step.PostLoad);
             }

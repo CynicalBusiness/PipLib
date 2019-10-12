@@ -19,7 +19,7 @@ namespace PipLib.Compat
             public static bool Prepare ()
             {
                 // only do this if we're hijacking the logger
-                return PipLib.Options.doHijackLogger;
+                return PipLib.Options.DoHijackLogger;
             }
 
             public static bool Prefix (string value)

@@ -1,14 +1,26 @@
-﻿using PipLib.Tech;
+﻿using PipLib.Options;
+using PipLib.Tech;
 using STRINGS;
 
 namespace PipLib.Mod.Impl
 {
-    public class PipModImpl : PipMod
+    public class PipModImpl : PipMod, IHaveOptions<PipModImplOptions>
     {
+
+        internal static PipModImpl Instance { get; private set; }
+
+        public PipModImplOptions Options => new PipModImplOptions();
+
+        public string OptionsName => "config";
 
         public override string Name => "PipLib";
 
         public override string Prefix => "PL";
+
+        public PipModImpl()
+        {
+            Instance = this;
+        }
 
         public override void Initialize()
         {

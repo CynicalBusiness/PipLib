@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PipLib.Options;
+using System;
 using System.Diagnostics;
 using System.Threading;
 
@@ -280,13 +281,13 @@ namespace PipLib.Logging
 
         private bool ShouldWrite(Logger.LEVEL level)
         {
-            switch (PipLib.Options.loggingVerbosity)
+            switch (PipLib.Options.Verbosity)
             {
-                case PLOptions.LoggingVerbosity.Info:
+                case LibOptions.LoggingVerbosity.Info:
                     return level >= Logger.LEVEL.INFO;
-                case PLOptions.LoggingVerbosity.Verbose:
+                case LibOptions.LoggingVerbosity.Verbose:
                     return level >= Logger.LEVEL.VERB;
-                case PLOptions.LoggingVerbosity.Debug:
+                case LibOptions.LoggingVerbosity.Debug:
                 default:
                     return true;
             }
@@ -294,12 +295,12 @@ namespace PipLib.Logging
 
         private string GetLoggingHead(Logger.LEVEL level)
         {
-            return string.Format(PipLib.Options.doHijackLogger ? "[{0}]@{1} {2,5}:" : "[{0}] [{1}] [{2}]", GetTimestamp(), Thread.CurrentThread.ManagedThreadId, level.ToString());
+            return string.Format(PipLib.Options.DoHijackLogger ? "[{0}]@{1} {2,5}:" : "[{0}] [{1}] [{2}]", GetTimestamp(), Thread.CurrentThread.ManagedThreadId, level.ToString());
         }
 
         private string GetCaller()
         {
-            if (PipLib.Options.doHijackLogger && PipLib.Options.loggingVerbosity >= PLOptions.LoggingVerbosity.Debug)
+            if (PipLib.Options.DoHijackLogger && PipLib.Options.Verbosity >= LibOptions.LoggingVerbosity.Debug)
             {
                 var trace = new StackTrace();
                 int currentFrame = 1;

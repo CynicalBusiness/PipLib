@@ -13,7 +13,7 @@ namespace PipLib.Logging
         {
             public static bool Prepare()
             {
-                return PipLib.Options.doHijackLogger;
+                return PipLib.Options.DoHijackLogger;
             }
 
             public static bool Prefix(object obj)
@@ -28,7 +28,7 @@ namespace PipLib.Logging
         {
             public static bool Prepare()
             {
-                return PipLib.Options.doHijackLogger;
+                return PipLib.Options.DoHijackLogger;
             }
 
             public static bool Prefix(object obj, UnityEngine.Object context)
@@ -43,7 +43,7 @@ namespace PipLib.Logging
         {
             public static bool Prepare()
             {
-                return PipLib.Options.doHijackLogger;
+                return PipLib.Options.DoHijackLogger;
             }
 
             public static bool Prefix(string format, object[] args)
@@ -58,7 +58,7 @@ namespace PipLib.Logging
         {
             public static bool Prepare()
             {
-                return PipLib.Options.doHijackLogger;
+                return PipLib.Options.DoHijackLogger;
             }
 
             public static bool Prefix(UnityEngine.Object context, string format, object[] args)
@@ -73,7 +73,7 @@ namespace PipLib.Logging
         {
             public static bool Prepare()
             {
-                return PipLib.Options.doHijackLogger;
+                return PipLib.Options.DoHijackLogger;
             }
 
             public static bool Prefix(object obj)
@@ -88,7 +88,7 @@ namespace PipLib.Logging
         {
             public static bool Prepare()
             {
-                return PipLib.Options.doHijackLogger;
+                return PipLib.Options.DoHijackLogger;
             }
 
             public static bool Prefix(object obj, UnityEngine.Object context)
@@ -103,7 +103,7 @@ namespace PipLib.Logging
         {
             public static bool Prepare()
             {
-                return PipLib.Options.doHijackLogger;
+                return PipLib.Options.DoHijackLogger;
             }
 
             public static bool Prefix(string format, object[] args)
@@ -118,7 +118,7 @@ namespace PipLib.Logging
         {
             public static bool Prepare()
             {
-                return PipLib.Options.doHijackLogger;
+                return PipLib.Options.DoHijackLogger;
             }
 
             public static bool Prefix(UnityEngine.Object context, string format, object[] args)
@@ -133,7 +133,7 @@ namespace PipLib.Logging
         {
             public static bool Prepare()
             {
-                return PipLib.Options.doHijackLogger;
+                return PipLib.Options.DoHijackLogger;
             }
 
             public static bool Prefix(object obj)
@@ -148,7 +148,7 @@ namespace PipLib.Logging
         {
             public static bool Prepare()
             {
-                return PipLib.Options.doHijackLogger;
+                return PipLib.Options.DoHijackLogger;
             }
 
             public static bool Prefix(object obj, UnityEngine.Object context)
@@ -163,7 +163,7 @@ namespace PipLib.Logging
         {
             public static bool Prepare()
             {
-                return PipLib.Options.doHijackLogger;
+                return PipLib.Options.DoHijackLogger;
             }
 
             public static bool Prefix(string format, object[] args)
@@ -178,7 +178,7 @@ namespace PipLib.Logging
         {
             public static bool Prepare()
             {
-                return PipLib.Options.doHijackLogger;
+                return PipLib.Options.DoHijackLogger;
             }
 
             public static bool Prefix(UnityEngine.Object context, string format, object[] args)

@@ -21,10 +21,31 @@ namespace PipLib
         public const string DIR_ELEMENTS = "elements";
 
         /// <summary>
+        /// The config directory for mods
+        /// </summary>
+        public const string DIR_CONFIG = "config";
+
+        /// <summary>
+        /// YAML file extension
+        /// </summary>
+        public const string EXT_YAML = "yaml";
+
+        /// <summary>
+        /// JSON file extension
+        /// </summary>
+        public const string EXT_JSON = "json";
+
+        /// <summary>
         /// A regex pattern to find `yaml`/`yml` files
         /// </summary>
         /// <returns></returns>
         public static readonly Regex PATTERN_YAML = new Regex("\\.ya?ml$", RegexOptions.IgnoreCase);
+
+        /// <summary>
+        /// A regex pattern to find `json` files
+        /// </summary>
+        /// <returns></returns>
+        public static readonly Regex PATTERN_JSON = new Regex("\\.json$", RegexOptions.IgnoreCase);
 
         /// <summary>
         /// The suffix used for <see cref="KAnim"/>.
@@ -86,6 +107,11 @@ namespace PipLib
                 default:
                     return temp;
             }
+        }
+
+        public static void NOOP ()
+        {
+            /* no-op */
         }
 
         /// <summary>
