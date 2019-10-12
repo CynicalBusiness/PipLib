@@ -68,47 +68,49 @@ namespace PipLib.Options
 
         public static void MergeOptions<TOptions> (IHaveOptions<TOptions> optionsProvider)
         {
-            var optsNew = LoadOptions(optionsProvider);
-            var optsOld = optionsProvider.Options;
+            var optsLoaded = LoadOptions(optionsProvider);
+            var optsTarget = optionsProvider.Options;
 
-            if (optsNew == null)
+            if (optsLoaded == null)
             {
                 Logger.Verbose("No options to merge, either defaults were loaded or there was an error.");
                 return;
             }
 
-            foreach (var field in optsNew.GetType().GetFields())
+            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+            foreach (var field in typeof(TOptions).GetFields(flags))
             {
                 if (field.GetCustomAttributes(typeof(Option), true).Length > 0)
                 {
                     // assign fields. Nothing special
-                    var val = field.GetValue(optsNew);
-                    if (val != null)
+                    var val = field.GetValue(optsLoaded);
+                    if (val != null && !val.Equals(field.GetValue(optsTarget)))
                     {
-                        field.SetValue(optsOld, val);
+                        field.SetValue(optsTarget, val);
                     }
                 }
             }
 
-            foreach (var prop in optsNew.GetType().GetProperties())
+            foreach (var prop in typeof(TOptions).GetProperties(flags))
             {
-                if (prop.GetCustomAttributes(typeof(Option), true).Length > 0)
+                if (prop.GetCustomAttributes(typeof(Option), false).Length > 0)
                 {
-                    // properties are a litle weirder. We're only going to set them if they _have_ a set.
+                    // properties are a little weirder. We're only going to set them if they have a setter.
                     var setter = prop.GetSetMethod(true);
                     var getter = prop.GetGetMethod(true);
                     if (setter != null && getter != null)
                     {
-                        var val = getter.Invoke(optsNew, new object[0]);
-                        if (val != null)
+                        var val = getter.Invoke(optsLoaded, new object[0]);
+                        if (val != null && !val.Equals(getter.Invoke(optsTarget, new object[0])))
                         {
-                            setter.Invoke(optsOld, new []{ val });
+                            setter.Invoke(optsTarget, new []{ val });
                         }
                     }
                 }
             }
 
-            Logger.Info("Successfully merged options for: {0}", optionsProvider.GetType().FullName);
+            Logger.Info("Successfully merged options for: {0}", typeof(TOptions).FullName);
         }
 
         /// <summary>
@@ -152,6 +154,7 @@ namespace PipLib.Options
             Directory.CreateDirectory(Path.GetDirectoryName(file));
 
             var serializer = new SerializerBuilder();
+            serializer.EmitDefaults();
             // TODO type mappings
 
             using (var sr = new StringReader(serializer.Build().Serialize(optionsProvider.Options)))
