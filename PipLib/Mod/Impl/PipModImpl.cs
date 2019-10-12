@@ -9,7 +9,9 @@ namespace PipLib.Mod.Impl
 
         internal static PipModImpl Instance { get; private set; }
 
-        public PipModImplOptions Options => new PipModImplOptions();
+        private PipModImplOptions options = new PipModImplOptions();
+
+        public PipModImplOptions Options => options;
 
         public string OptionsName => "config";
 

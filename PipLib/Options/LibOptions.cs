@@ -5,7 +5,8 @@ namespace PipLib.Options
     {
         public class Provider : IHaveOptions<LibOptions>
         {
-            public LibOptions Options => new LibOptions();
+            private LibOptions options = new LibOptions();
+            public LibOptions Options => options;
             public string OptionsName => "lib";
         }
 
