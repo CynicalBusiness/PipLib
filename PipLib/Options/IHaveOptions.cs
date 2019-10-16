@@ -15,4 +15,6 @@ namespace PipLib.Options
         /// <value></value>
         string OptionsName { get; }
     }
+
+    public interface IHaveOptions : IHaveOptions<object> { }
 }
