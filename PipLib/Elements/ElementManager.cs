@@ -154,8 +154,9 @@ namespace PipLib.Elements
 
         internal static int CollectElements (string dir, ref List<ElementLoader.ElementEntry> results)
         {
-            var foundElements = new List<string>();
+            if (!Directory.Exists(dir)) return 0;
 
+            var foundElements = new List<string>();
             var files = Array.FindAll(Directory.GetFiles(dir), f => PLUtil.PATTERN_YAML.IsMatch(f));
             foreach (var file in files)
             {
