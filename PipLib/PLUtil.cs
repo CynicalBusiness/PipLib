@@ -154,5 +154,40 @@ namespace PipLib
         {
             return Assembly.GetCallingAssembly().GetName().Name;
         }
+
+        /// <summary>
+        /// Concats a variable number of arrays together
+        /// </summary>
+        /// <param name="firstArray">The first array to start the concat</param>
+        /// <param name="arrays">Additional arrays to concat</param>
+        /// <typeparam name="T">The type of the array</typeparam>
+        /// <returns>The newly concatenated array</returns>
+        public static T[] ArrayConcat<T> (T[] firstArray, params T[][] arrays)
+        {
+            T[] newArray = firstArray;
+            if (arrays.Length > 0)
+            {
+                foreach (var arr in arrays)
+                {
+                    newArray = newArray.Concat(arr);
+                }
+            }
+            return newArray;
+        }
+
+        /// <summary>
+        /// Contactinates the array with another, returning a new array comprised of the two
+        /// </summary>
+        /// <param name="array">The array to contact to</param>
+        /// <param name="merge">The arrat to add</param>
+        /// <typeparam name="T">The type of the array</typeparam>
+        /// <returns>The array type</returns>
+        public static T[] Concat<T> (this T[] array, T[] merge)
+        {
+            var newArray = new T[array.Length + merge.Length];
+            array.CopyTo(newArray, 0);
+            merge.CopyTo(newArray, array.Length);
+            return newArray;
+        }
     }
 }

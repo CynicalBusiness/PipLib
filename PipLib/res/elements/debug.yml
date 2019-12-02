@@ -21,6 +21,10 @@
     buildMenuSort: 1
     isDisabled: false
     state: Solid
+    attributes:
+      - attributeId: OverheatTemperature
+        value: 1000
+        isMultiplier: false
     localizationID: STRINGS.ELEMENTS.DEBUGELEMENTSOLID.NAME
 
   - elementId: DebugElementLiquid
@@ -48,3 +52,8 @@
     isDisabled: false
     state: Liquid
     localizationID: STRINGS.ELEMENTS.DEBUGELEMENTSOLID.NAME
+    color:
+      r: 200
+      g: 80
+      b: 100
+      a: 255

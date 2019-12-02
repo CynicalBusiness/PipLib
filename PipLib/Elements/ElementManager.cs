@@ -1,4 +1,5 @@
 using Klei;
+using Klei.AI;
 using PipLib.Mod;
 using Harmony;
 using System;
@@ -16,29 +17,28 @@ namespace PipLib.Elements
         internal static Dictionary<SimHashes, string> simHashTable = new Dictionary<SimHashes, string>();
         internal static Dictionary<string, object> simHashReverseTable = new Dictionary<string, object>();
 
-        private static List<ElementDef> defs = new List<ElementDef>();
+        internal static Hashtable substanceList;
+        internal static SubstanceTable substanceTable;
+
+        private static List<ElementEntryExtended> loadedElements = new List<ElementEntryExtended>();
 
         private static FieldInfo SubstanceTableList = AccessTools.Field(typeof(SubstanceTable), "list");
 
         /// <summary>
-        /// Adds a tag to the given element
+        /// Adds tags to the given element
         /// </summary>
         /// <param name="element">The element to add the tag to</param>
-        /// <param name="tag">The tag to add</param>
-        public static void AddTag (Element element, Tag tag)
+        /// <param name="tags">The tags to add</param>
+        public static void AddTag (Element element, params Tag[] tags)
         {
-            var tags = element.oreTags;
-            var len = tags.Length;
-            Array.Resize(ref tags, len + 1);
-            tags[len] = tag;
-            element.oreTags = tags;
+            element.oreTags = PLUtil.ArrayConcat(element.oreTags, tags);
         }
 
         /// <summary>
         /// Adds the given tag mappings
         /// </summary>
         /// <param name="tags">The tags to add</param>
-        public static void AddTags (Dictionary<Element, Tag> tags)
+        public static void AddBulkTags (Dictionary<Element, Tag[]> tags)
         {
             foreach (var tagsEntry in tags)
             {
@@ -56,15 +56,12 @@ namespace PipLib.Elements
         {
             switch (state)
             {
-                case Element.State.Vacuum:
-                    return substanceTable.GetSubstance(SimHashes.Vacuum).material;
-                case Element.State.Gas:
-                    return substanceTable.GetSubstance(SimHashes.Oxygen).material;
                 case Element.State.Liquid:
-                    return substanceTable.GetSubstance(SimHashes.Water).material;
+                    return substanceTable.liquidMaterial;
                 case Element.State.Solid:
+                    return substanceTable.solidMaterial;
                 default:
-                    return substanceTable.GetSubstance(SimHashes.Unobtanium).material;
+                    return null;
             }
         }
 
@@ -88,14 +85,154 @@ namespace PipLib.Elements
         }
 
         [PipMod.OnStep(PipMod.Step.Load)]
-        internal static void RegisterSimHashes()
+        internal static void Register()
         {
-            foreach (var def in defs)
+            foreach (var element in loadedElements)
             {
-                foreach (var state in def.states.Keys)
+                var id = GetElementID(element);
+                var hash = GetElementHash(element);
+
+
+            }
+        }
+
+        /// <summary>
+        /// Merges the given element entries into the given source value
+        /// </summary>
+        /// <param name="source">The source entry to load into</param>
+        /// <param name="from">The entries to load from</param>
+        public static void MergeElementEntries (ElementLoader.ElementEntry source, params ElementLoader.ElementEntry[] from)
+        {
+            foreach (var entry in from)
+            {
+                foreach (var field in entry.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance))
                 {
-                    var id = def.GetStateID(state);
-                    var hash = def.GetHash(state);
+                    var value = field.GetValue(entry);
+                    if (value != null)
+                    {
+                        field.SetValue(source, value);
+                    }
+                }
+                foreach (var prop in entry.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    var value = prop.GetGetMethod().Invoke(entry, new object[0]);
+                    if (value != null)
+                    {
+                        prop.GetSetMethod().Invoke(source, new object[1]{ value });
+                    }
+                }
+            }
+        }
+
+        public static Color32 CreateColor32 (ElementEntryExtended.Color color)
+        {
+            if (color == null) return new Color32(255, 255, 255, 255);
+            return new Color32(
+                color.r,
+                color.g,
+                color.b,
+                color.a
+            );
+        }
+
+        public static AttributeModifier CreateAttributeModifier (ElementEntryExtended.Attribute attr)
+        {
+            if (attr == null) return null;
+            return new AttributeModifier(
+                attribute_id: attr.attributeId,
+                value: attr.value,
+                description: attr.description,
+                is_multiplier: attr.isMultiplier,
+                uiOnly: attr.isUIOnly,
+                is_readonly: attr.isReadonly
+            );
+        }
+
+        /// <summary>
+        /// Gets an element's ID from a given entry
+        /// </summary>
+        /// <param name="entry">The entry to get the ID from</param>
+        /// <returns></returns>
+        public static string GetElementID (ElementLoader.ElementEntry entry)
+        {
+            return entry.elementId;
+        }
+
+        /// <summary>
+        /// Gets a <see cref="SimHashes"/> representing this entry
+        /// </summary>
+        /// <param name="entry">The entry</param>
+        /// <returns></returns>
+        public static SimHashes GetElementHash (ElementLoader.ElementEntry entry)
+        {
+            return GetElementHash(GetElementID(entry));
+        }
+
+        public static SimHashes GetElementHash (string id)
+        {
+            return (SimHashes)Hash.SDBMLower(id);
+        }
+
+        /// <summary>
+        /// Creates a substance from the given element entry
+        /// </summary>
+        /// <param name="entry">The entry</param>
+        /// <returns></returns>
+        public static Substance CreateSubstance (ElementLoader.ElementEntry entry)
+        {
+            var state = entry.state;
+            var id = GetElementID(entry);
+            var ext = entry is ElementEntryExtended ? (ElementEntryExtended) entry : null;
+
+            var material = ElementManager.GetBaseMaterialForState(state, substanceTable);
+            var materialOverride = ext != null ? ext.material : null;
+            if (material == null)
+            {
+                string materialName = id.ToLower();
+                var tex = Assets.GetTexture(materialOverride ?? materialName);
+                if (tex != null)
+                {
+                    material.mainTexture = tex;
+                }
+                else
+                {
+                    ElementManager.Logger.Verbose("No material texture '{0}', using default: {1}", materialName, material.mainTexture.name);
+                }
+                material.name = materialName;
+            }
+
+            // get anim
+            var animName = ((ext != null ? ext.anim : null) ?? id.ToLower()) + PLUtil.SUFFIX_ANIM;
+            KAnimFile animFile = Assets.Anims.Find(a => a.name == animName);
+            if (animFile == null)
+            {
+                animFile = ElementManager.GetDefaultKAnimForState(state, substanceTable);
+                if (state == Element.State.Solid) {
+                    Logger.Verbose("No anim '{0}' found for {1}, using default: {2}", animName, id, animFile.name);
+                }
+            }
+
+            // colors
+            var color = CreateColor32(ext != null ? ext.color : null);
+            var uiColor = CreateColor32(ext != null ? ext.colorUI ?? ext.color : null);
+            var conduitColor = CreateColor32(ext != null ? ext.colorUI ?? ext.color : null);
+
+            Logger.Verbose("Created Substance: {0}({1})", id, (int)GetElementHash(entry));
+            return ModUtil.CreateSubstance(id, state, animFile, material, color, uiColor, conduitColor);
+        }
+
+        internal static void RegisterSubstances()
+        {
+            Logger.Info("Registering substances...");
+            foreach (var element in loadedElements)
+            {
+                var substance = CreateSubstance(element);
+                if (!substanceList.ContainsKey(substance.elementID))
+                {
+                    var id = element.elementId;
+                    var hash = substance.elementID;
+
+                    substanceList.Add(substance.elementID, substance);
 
                     simHashTable.Add(hash, id);
                     simHashReverseTable.Add(id, hash);
@@ -103,52 +240,25 @@ namespace PipLib.Elements
             }
         }
 
-        internal static void RegisterSubstances(Hashtable substanceList, SubstanceTable substanceTable)
+        internal static void RegisterAttributes ()
         {
-            foreach (var def in defs)
+            Logger.Info("Registering attributes...");
+            foreach (var entry in loadedElements)
             {
-                foreach (var state in def.states.Keys)
+                if (entry.attributes != null && entry.attributes.Length > 0)
                 {
-                    var id = def.GetStateID(state);
-                    var hash = def.GetHash(state);
-
-                    Logger.Info("add substance: {0} {1}", id, hash);
-                    substanceTable.GetList().Add(def.CreateSubstance(state, substanceTable));
-                }
-            }
-        }
-        internal static void RegisterAttributes()
-        {
-            foreach (var def in defs)
-            {
-                foreach (var state in def.states.Keys)
-                {
-                    var attrs = def.AddOrGetState(state).attributes;
-                    if (attrs.Count > 0)
+                    var element = ElementLoader.FindElementByHash(GetElementHash(entry));
+                    foreach (var attr in entry.attributes)
                     {
-                        var element = global::ElementLoader.FindElementByHash(def.GetHash(state));
-                        if (element != null)
-                        {
-                            element.attributeModifiers.AddRange(attrs.ConvertAll(a => a.Invoke(Db.Get())));
-                        }
-                        else
-                        {
-                            Debug.LogWarning($"Tried to add attributes to {def.GetStateID(state)}, but no element exists!");
-                        }
+                        element.attributeModifiers.Add(CreateAttributeModifier(attr));
+                        Logger.Verbose(" * Applied attribute modifier to {0}: {1} {2}{3} {4}",
+                            entry.elementId,
+                            attr.attributeId,
+                            attr.isMultiplier ? "x" : (attr.value >= 0 ? "+" : ""),
+                            attr.value,
+                            attr.description);
                     }
                 }
-            }
-        }
-
-        [PipMod.TypeCollector(typeof(IElementConfig))]
-        internal static void CollectDefs (Type type)
-        {
-            var ctor = type.GetConstructor(new Type[]{ });
-            if (ctor != null)
-            {
-                Logger.Debug("Found ElementConfig at {0}", type.FullName);
-                var config = (IElementConfig) ctor.Invoke(null);
-                defs.Add(config.CreateElementDef());
             }
         }
 
@@ -161,17 +271,18 @@ namespace PipLib.Elements
             foreach (var file in files)
             {
                 PipLib.Logger.Debug("loading elements from: {0}", file);
-                var elementCollection = YamlIO.Parse<ElementLoader.ElementEntryCollection>(File.ReadAllText(file), Path.GetFileName(file));
+                var elementCollection = YamlIO.Parse<ElementEntryExtended.Collection>(File.ReadAllText(file), Klei.FileSystem.FindFileHandle(Path.GetFileName(file)));
                 if (elementCollection != null && elementCollection.elements != null)
                 {
                     results.AddRange(elementCollection.elements);
+                    loadedElements.AddRange(elementCollection.elements);
                     foundElements.AddRange(Array.ConvertAll(elementCollection.elements, e => e.elementId));
                 }
             }
 
             if (foundElements.Count > 0)
             {
-                Logger.Verbose("Loaded {0} element(s) from '{1}': {2}", foundElements.Count, Path.GetDirectoryName(dir), string.Join(",", foundElements.ToArray()));
+                Logger.Info("Loaded {0} element(s) from '{1}': {2}", foundElements.Count, Path.GetDirectoryName(dir), string.Join(",", foundElements.ToArray()));
             }
             return foundElements.Count;
         }

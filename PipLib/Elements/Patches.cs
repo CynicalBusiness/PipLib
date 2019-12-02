@@ -7,7 +7,6 @@ namespace PipLib.Elements
 {
     public static class Patches
     {
-
         [HarmonyPatch(typeof(Enum), "ToString", new Type[]{ })]
         internal static class Patch_Enum_ToString
         {
@@ -59,6 +58,7 @@ namespace PipLib.Elements
                 {
                     ElementManager.CollectElements(System.IO.Path.Combine(PLUtil.GetAssemblyDir(mod.GetType()), PLUtil.DIR_ELEMENTS), ref __result);
                 }
+                ElementManager.RegisterSubstances();
             }
         }
 
@@ -68,8 +68,13 @@ namespace PipLib.Elements
 
             private static void Prefix(ref Hashtable substanceList, SubstanceTable substanceTable)
             {
-                ElementManager.Logger.Info("Registering substances...");
-                ElementManager.RegisterSubstances(substanceList, substanceTable);
+                ElementManager.substanceList = substanceList;
+                ElementManager.substanceTable = substanceTable;
+            }
+
+            private static void Postfix ()
+            {
+                ElementManager.RegisterAttributes();
             }
         }
     }
