@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
 
@@ -11,14 +11,75 @@
     <GameName>OxygenNotIncluded</GameName>
     <GameDev>Klei</GameDev>
 
+    <GameVersionLive>master</GameVersionLive>
+    <GameVersionBeta>testing</GameVersionBeta>
+
     <GameProgramDir>$(SteamAppsCommon)\$(GameName)</GameProgramDir>
     <GameConfigDir>$(USERPROFILE)\Documents\Klei\$(GameName)</GameConfigDir>
     <GameProgramDataDir>$(GameProgramDir)\$(GameName)_Data</GameProgramDataDir>
-    <GameLibDir>$(GameProgramDataDir)\Managed</GameLibDir>
+    <GameLibParent>$(GameConfigDir)\lib</GameLibParent>
+    <GameLibTarget>master</GameLibTarget>
+    <GameLibDir>$(GameLibParent)\$(GameLibTarget)</GameLibDir>
     <GameModsDir>$(GameConfigDir)\mods</GameModsDir>
 
     <ProjectDir>$(MSBuildProjectDirectory)</ProjectDir>
     <ProjectLibDir>$(ProjectDir)\lib</ProjectLibDir>
     <ProjectPackageDir>$(ProjectDir)\..\packages</ProjectPackageDir>
   </PropertyGroup>
+
+  <PropertyGroup Label="BuildConfiguration">
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace Condition=" '$(RootNamespace)' == ''">$(AssemblyName)</RootNamespace>
+    <RootNamespace Condition=" '$(RootNamespace)' != '$(AssemblyName)'">$(RootNamespace).$(AssemblyName)</RootNamespace>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp></NuGetPackageImportStamp>
+    <!-- CS1591 is a warning about a missing doc comment, which fails everywhere -->
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>$(GameModsDir)\Dev\$(AssemblyName)</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RegisterForComInterop>false</RegisterForComInterop>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Build\$(Configuration)\$(AssemblyName)</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <Import Project=".\PipLib.References.props" />
+
+  <ItemGroup>
+    <Compile Include="**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".editorconfig" />
+    <None Include="packages.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="$(ProjectLibDir)\*.LICENSE" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <OutputFiles Include="$(ProjectDir)\res\**\*.*" />
+  </ItemGroup>
+
+  <Import Project=".\PipLib.targets" />
 </Project>

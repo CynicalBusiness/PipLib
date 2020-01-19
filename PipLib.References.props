@@ -1,6 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup>
+  <ItemGroup Label="SystemReferences">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="Exists('$(GameLibParent)\$(GameVersionBeta)')">
+    <GameLibTarget>$(GameVersionBeta)</GameLibTarget>
+    <GameLibDir>$(GameLibParent)\$(GameLibTarget)</GameLibDir>
+  </PropertyGroup>
+
+  <ItemGroup Label="GameReferences">
     <Reference Include="0Harmony">
       <HintPath>$(GameLibDir)\0Harmony.dll</HintPath>
       <Private>False</Private>
@@ -14,11 +28,41 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>$(GameLibDir)\UnityEngine.dll</HintPath>
+      <!-- <HintPath>$(GameLibDir)\UnityEngine.dll</HintPath> -->
+      <!-- Override Unity version due to issue with incorrect framework version -->
+      <HintPath>$(GameLibParent)\$(GameVersionLive)\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(GameLibDir)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Label="GameReferencePipLib" Condition="'$(WantsPipLib)' != ''">
+    <Reference Include="PipLib">
+      <HintPath>$(GameModsDir)\Dev\PipLib\PipLib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Label="GameReferenceUnityUI" Condition="'$(WantsUnityUI)' != ''">
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(GameLibDir)\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Label="GameReferenceUnityImageConversion" Condition="'$(WantsUnityImageConversion)' != ''">
+    <Reference Include="UnityEngine.ImageConversion">
+      <HintPath>$(GameLibDir)\UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Label="GameReferenceNewtonsoftJson" Condition="'$(WantsNewtonsoftJson)' != ''">
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(GameLibDir)\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
