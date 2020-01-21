@@ -32,8 +32,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace Condition=" '$(RootNamespace)' == ''">$(AssemblyName)</RootNamespace>
-    <RootNamespace Condition=" '$(RootNamespace)' != '$(AssemblyName)'">$(RootNamespace).$(AssemblyName)</RootNamespace>
+    <RootNamespace Condition=" '$(RootName)' == ''">$(AssemblyName)</RootNamespace>
+    <RootNamespace Condition=" '$(RootName)' != ''">$(RootName).$(AssemblyName)</RootNamespace>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
