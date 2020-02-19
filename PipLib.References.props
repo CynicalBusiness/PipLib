@@ -28,9 +28,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <!-- <HintPath>$(GameLibDir)\UnityEngine.dll</HintPath> -->
-      <!-- Override Unity version due to issue with incorrect framework version -->
-      <HintPath>$(GameLibParent)\$(GameVersionLive)\UnityEngine.dll</HintPath>
+      <HintPath>$(GameLibDir)\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">

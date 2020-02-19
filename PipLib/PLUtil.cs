@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -188,6 +189,18 @@ namespace PipLib
             array.CopyTo(newArray, 0);
             merge.CopyTo(newArray, array.Length);
             return newArray;
+        }
+
+        public static void Deconstruct<T1, T2>(this KeyValuePair<T1, T2> tuple, out T1 key, out T2 val)
+        {
+            key = tuple.Key;
+            val = tuple.Value;
+        }
+
+        public static void Deconstruct<T1, T2>(this Tuple<T1, T2> tuple, out T1 first, out T2 second)
+        {
+            first = tuple.first;
+            second = tuple.second;
         }
     }
 }

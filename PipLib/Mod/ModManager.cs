@@ -1,5 +1,4 @@
-using PipLib.Building;
-using PipLib.Elements;
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -10,14 +9,44 @@ namespace PipLib.Mod
     {
         internal static Logging.ILogger Logger = PipLib.Logger.Fork("ModManager");
 
-        internal static List<Type> modTypes = new List<Type>();
-        internal static List<IPipMod> mods = new List<IPipMod>();
+        internal static Dictionary<Assembly, Tuple<IPipMod, Type>> mods = new Dictionary<Assembly, Tuple<IPipMod, Type>>();
 
-        internal static Dictionary<IPipMod, Dictionary<PipMod.Step, List<MethodInfo>>> stepHandlers = new Dictionary<IPipMod, Dictionary<PipMod.Step, List<MethodInfo>>>();
+        internal static Dictionary<Assembly, Dictionary<PipMod.Step, List<MethodInfo>>> stepHandlers = new Dictionary<Assembly, Dictionary<PipMod.Step, List<MethodInfo>>>();
 
         internal static Dictionary<PipMod.TypeCollector, MethodInfo> collectors = new Dictionary<PipMod.TypeCollector, MethodInfo>();
 
-        internal static List<Tuple<bool, Assembly>> assmeblies = new List<Tuple<bool, Assembly>>();
+        internal static List<Tuple<bool, Assembly>> assemblies = new List<Tuple<bool, Assembly>>();
+
+        public static IEnumerable<IPipMod> Mods
+        {
+            get
+            {
+                return
+                    from mod in mods.Values
+                    where mod.first != null
+                    select mod.first;
+            }
+        }
+
+        public static IEnumerable<Type> ModTypes
+        {
+            get
+            {
+                return
+                    from mod in mods.Values
+                    select mod.second;
+            }
+        }
+
+        public static IPipMod GetModForAssembly (Assembly assembly)
+        {
+            return mods.TryGetValue(assembly, out var mod) ? mod.first : null;
+        }
+
+        public static bool IsPipModAssembly (Assembly assembly)
+        {
+            return GetModForAssembly(assembly) != null;
+        }
 
         internal static void LoadTypes (Assembly assembly)
         {
@@ -28,12 +57,8 @@ namespace PipLib.Mod
                 if (PipMod.TypeCollector.IsImpl(typeof(IPipMod), type))
                 {
                     PipLib.Logger.Verbose("Found PipLib mod at: {0}, {1}", type.FullName, assembly.FullName);
-                    modTypes.Add(type);
+                    mods.Add(assembly, new Tuple<IPipMod, Type>(null, type));
                     isPipModAssembly = true;
-
-                    // TODO optimize these a bit?
-                    // ElementManager.CollectDefs(assembly.GetTypes());
-                    // BuildingManager.CollectBuildingInfo(assembly.GetTypes());
                 }
 
                 foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
@@ -56,7 +81,9 @@ namespace PipLib.Mod
                 }
             }
 
+            assemblies.Add(new Tuple<bool, Assembly>(isPipModAssembly, assembly));
             CollectTypes(assembly, isPipModAssembly);
+            CollectSteps(assembly);
         }
 
         internal static void CollectTypes (Assembly assembly, bool isPipModAssembly)
@@ -76,19 +103,20 @@ namespace PipLib.Mod
 
         internal static void InstanciateAll ()
         {
-            foreach (var type in modTypes)
+            foreach (var (assembly, (modInst, modType)) in mods)
             {
-                var ctor = type.GetConstructor(new Type[]{ });
+                if (modInst != null) continue;
+
+                var ctor = modType.GetConstructor(new Type[]{ });
                 if (ctor == null)
                 {
-                    Logger.Warning("Could not instanciate '{0}' because no constructor with empty arguments exists", type.FullName);
+                    Logger.Warning("Could not instanciate '{0}' because no constructor with empty arguments exists", modType.FullName);
                 }
                 else
                 {
                     var mod = (IPipMod)ctor.Invoke(new object[]{ });
                     Logger.Verbose("Instanced: {0}", mod.Name);
-                    mods.Add(mod);
-                    CollectSteps(mod, mod.GetType().Assembly.GetTypes());
+                    mods[assembly].first = mod;
                     DoStep(PipMod.Step.PostInstanciate, mod);
                 }
             }
@@ -120,28 +148,36 @@ namespace PipLib.Mod
 
         internal static void DoStep(PipMod.Step step)
         {
-            foreach (var mod in mods)
+            foreach (var (isPipMod, assembly) in assemblies)
             {
-                DoStep(step, mod);
+                DoStep(step, assembly);
             }
         }
 
-
         internal static void DoStep(PipMod.Step step, IPipMod mod)
         {
-            var methods = GetStepHandlersFor(mod, step);
+            DoStep(step, mod.GetType().Assembly);
+        }
+
+        internal static void DoStep(PipMod.Step step, Assembly assembly)
+        {
+            var methods = GetStepHandlersFor(assembly, step);
             if (methods.Count > 0)
             {
-                Logger.Verbose("{0}: {1}", step.ToString().ToUpper(), mod.Name);
+                Logger.Verbose("{0}: {1}", step.ToString().ToUpper(), assembly.FullName);
                 foreach (var method in methods)
                 {
                     try
                     {
                         Logger.Debug("Invoking step handler in: {0}", method.DeclaringType.FullName);
                         var args = method.GetParameters();
-                        if (args.Length > 0 && typeof(IPipMod).IsAssignableFrom(args[0].ParameterType))
+                        if (args.Length == 1 && typeof(IPipMod).IsAssignableFrom(args[0].ParameterType))
                         {
-                            method.Invoke(null, new object[]{ mod });
+                            method.Invoke(null, new object[]{ GetModForAssembly(assembly) });
+                        }
+                        else if (args.Length == 1 && typeof(Assembly).IsAssignableFrom(args[0].ParameterType))
+                        {
+                            method.Invoke(null, new object[]{ assembly });
                         }
                         else
                         {
@@ -150,17 +186,17 @@ namespace PipLib.Mod
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error("Failed running {0} for '{1}' at {2}.{3}:", step.ToString().ToUpper(), mod.Name, method.DeclaringType.FullName, method.Name);
+                        Logger.Error("Failed running {0} for '{1}' at {2}.{3}:", step.ToString().ToUpper(), assembly.FullName, method.DeclaringType.FullName, method.Name);
                         Logger.Log(ex);
-                        ModHadError(mod, step);
+                        // ModHadError(mod, step);
                     }
                 }
             }
         }
 
-        internal static void CollectSteps (IPipMod mod, IEnumerable<Type> types)
+        internal static void CollectSteps (Assembly assembly)
         {
-            foreach (var type in types)
+            foreach (var type in assembly.GetTypes())
             {
                 foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
                 {
@@ -169,7 +205,7 @@ namespace PipLib.Mod
                     {
                         foreach (var stepAttr in stepAttrs)
                         {
-                            GetStepHandlersFor(mod, stepAttr.Step).Add(method);
+                            GetStepHandlersFor(assembly, stepAttr.Step).Add(method);
                         }
                     }
                 }
@@ -178,31 +214,41 @@ namespace PipLib.Mod
 
         private static List<MethodInfo> GetStepHandlersFor (IPipMod mod, PipMod.Step step)
         {
-            var steps = GetStepHandlersFor(mod);
-            if (!steps.TryGetValue(step, out var methods))
-            {
-                methods = new List<MethodInfo>();
-                steps.Add(step, methods);
-            }
-            return methods;
+            return GetStepHandlersFor(mod.GetType().Assembly, step);
         }
 
         private static Dictionary<PipMod.Step, List<MethodInfo>> GetStepHandlersFor (IPipMod mod)
         {
-            if (!stepHandlers.TryGetValue(mod, out var handlers))
+            return GetStepHandlersFor(mod.GetType().Assembly);
+        }
+
+        private static List<MethodInfo> GetStepHandlersFor (Assembly assembly, PipMod.Step step)
+        {
+            var handlersForAssembly = GetStepHandlersFor(assembly);
+            if (!handlersForAssembly.TryGetValue(step, out var methods))
             {
-                handlers = new Dictionary<PipMod.Step, List<MethodInfo>>();
-                stepHandlers.Add(mod, handlers);
+                methods = new List<MethodInfo>();
+                handlersForAssembly.Add(step, methods);
             }
-            return handlers;
+            return methods;
+        }
+
+        private static Dictionary<PipMod.Step, List<MethodInfo>> GetStepHandlersFor (Assembly assembly)
+        {
+            if (!stepHandlers.TryGetValue(assembly, out var dict))
+            {
+                dict = new Dictionary<PipMod.Step, List<MethodInfo>>();
+                stepHandlers.Add(assembly, dict);
+            }
+            return dict;
         }
 
         [PipMod.OnStep(PipMod.Step.Load)]
         private static void Load()
         {
-            foreach (var mod in mods)
+            foreach (var (assembly, (mod, modType)) in mods)
             {
-                Logger.Info("Loading {0} v{1}", mod.Name, mod.Version);
+                Logger.Info("Loading {0} v{1} ({2})", mod.Name, mod.Version, assembly.FullName);
                 mod.Load();
             }
         }
@@ -210,7 +256,7 @@ namespace PipLib.Mod
         [PipMod.OnStep(PipMod.Step.PostLoad)]
         private static void PostLoad()
         {
-            foreach (var mod in mods)
+            foreach (var mod in Mods)
             {
                 mod.PostLoad();
             }
@@ -219,7 +265,7 @@ namespace PipLib.Mod
         [PipMod.OnStep(PipMod.Step.PreInitialize)]
         private static void PreInitialize()
         {
-            foreach (var mod in mods)
+            foreach (var mod in Mods)
             {
                 mod.PreInitialize();
             }
@@ -228,7 +274,7 @@ namespace PipLib.Mod
         [PipMod.OnStep(PipMod.Step.Initialize)]
         private static void Initialize()
         {
-            foreach (var mod in mods)
+            foreach (var mod in Mods)
             {
                 mod.Initialize();
             }
@@ -237,7 +283,7 @@ namespace PipLib.Mod
         [PipMod.OnStep(PipMod.Step.PostInitialize)]
         private static void PostInitialize()
         {
-            foreach (var mod in mods)
+            foreach (var mod in Mods)
             {
                 mod.PostInitialize();
             }

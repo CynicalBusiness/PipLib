@@ -56,6 +56,6 @@ namespace PipLib
             LocString.CreateLocStringKeys(typeof(global::PipLib.STRINGS.RESEARCH));
         }
 
-        public static IEnumerable<IPipMod> Mods => ModManager.mods;
+        public static IEnumerable<IPipMod> Mods => ModManager.Mods;
     }
 }

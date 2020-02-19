@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("PipLib")]
-[assembly: AssemblyCopyright("Copyright © Matthew Struble 2019")]
+[assembly: AssemblyCopyright("Copyright © 2019-2020 Matthew Struble, GPL-v3.0")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,4 +32,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.3.20040.0")]
+[assembly: AssemblyFileVersion("1.4.20040.0")]

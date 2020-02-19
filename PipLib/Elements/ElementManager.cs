@@ -238,6 +238,8 @@ namespace PipLib.Elements
                     simHashReverseTable.Add(id, hash);
                 }
             }
+
+            Logger.Info("Successfully registered {0} substance(s)", loadedElements.Count);
         }
 
         internal static void RegisterAttributes ()
