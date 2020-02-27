@@ -80,9 +80,9 @@ namespace PipLib.Mod
         [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
         public class TypeCollector : Attribute
         {
-            public static bool IsImpl (Type type, Type t)
+            public static bool IsImpl (Type parent, Type type)
             {
-                return type.IsAssignableFrom(t) && t.IsClass && !t.IsAbstract;
+                return parent.IsAssignableFrom(type) && type.IsClass && !type.IsAbstract;
             }
 
             public Type Predicate { get; private set; }

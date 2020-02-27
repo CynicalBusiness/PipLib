@@ -51,8 +51,9 @@ namespace PipLib.Mod
         internal static void LoadTypes (Assembly assembly)
         {
             bool isPipModAssembly = false;
+            var types = assembly.GetTypes();
 
-            foreach (var type in assembly.GetTypes())
+            foreach (var type in types)
             {
                 if (PipMod.TypeCollector.IsImpl(typeof(IPipMod), type))
                 {
@@ -82,22 +83,34 @@ namespace PipLib.Mod
             }
 
             assemblies.Add(new Tuple<bool, Assembly>(isPipModAssembly, assembly));
-            CollectTypes(assembly, isPipModAssembly);
+            CollectTypes(types, isPipModAssembly);
             CollectSteps(assembly);
         }
 
-        internal static void CollectTypes (Assembly assembly, bool isPipModAssembly)
+        internal static void CollectTypes (Type[] types, bool isPipModAssembly)
         {
-            foreach (var type in assembly.GetTypes())
+            foreach (var (attr, method) in collectors)
             {
-                foreach (var colEntry in collectors)
+                int total = 0, found = 0;
+                foreach (var type in types)
                 {
-                    if (PipMod.TypeCollector.IsImpl(colEntry.Key.Predicate, type) && (isPipModAssembly || colEntry.Key.CaptureNonPipTypes))
+                    total++;
+                    if (PipMod.TypeCollector.IsImpl(attr.Predicate, type))
                     {
-                        Logger.Debug("Invoked type collector {0} on: {1}", colEntry.Value.DeclaringType.FullName, type.FullName);
-                        colEntry.Value.Invoke(null, new object[1]{ type });
+                        if (isPipModAssembly || attr.CaptureNonPipTypes)
+                        {
+                            found++;
+                            Logger.Debug("Invoked type collector {0} on: {1}", method.DeclaringType.FullName, type.FullName);
+                            method.Invoke(null, new object[1]{ type });
+                        }
+                        else
+                        {
+                            Logger.Debug("Type collector {0} found `{1}`, but was skipped by filtering", method.DeclaringType.FullName, type.FullName);
+                        }
                     }
                 }
+
+                Logger.Debug("Collector searched {0} type(s) (should be {1}), {2} found matching predicate", total, types.Length, found);
             }
         }
 

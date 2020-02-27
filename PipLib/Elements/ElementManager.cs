@@ -20,7 +20,7 @@ namespace PipLib.Elements
         internal static Hashtable substanceList;
         internal static SubstanceTable substanceTable;
 
-        private static List<ElementEntryExtended> loadedElements = new List<ElementEntryExtended>();
+        public static List<ElementEntryExtended> loadedElements = new List<ElementEntryExtended>();
 
         private static FieldInfo SubstanceTableList = AccessTools.Field(typeof(SubstanceTable), "list");
 
@@ -224,6 +224,8 @@ namespace PipLib.Elements
         internal static void RegisterSubstances()
         {
             Logger.Info("Registering substances...");
+
+            var simHashesLength = Enum.GetValues(typeof(SimHashes)).Length;
             foreach (var element in loadedElements)
             {
                 var substance = CreateSubstance(element);
@@ -239,7 +241,7 @@ namespace PipLib.Elements
                 }
             }
 
-            Logger.Info("Successfully registered {0} substance(s)", loadedElements.Count);
+            Logger.Info("Successfully registered {0} substance(s) ({1} total)", loadedElements.Count, loadedElements.Count + simHashesLength);
         }
 
         internal static void RegisterAttributes ()
@@ -264,7 +266,7 @@ namespace PipLib.Elements
             }
         }
 
-        internal static int CollectElements (string dir, ref List<ElementLoader.ElementEntry> results)
+        internal static int CollectElements (string dir, List<ElementLoader.ElementEntry> results)
         {
             if (!Directory.Exists(dir)) return 0;
 

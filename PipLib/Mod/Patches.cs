@@ -1,4 +1,7 @@
-﻿using System;
+﻿using System.Reflection.Emit;
+using System.Linq;
+using System.Collections.Generic;
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using Harmony;
@@ -20,7 +23,7 @@ namespace PipLib.Mod
 
                 var frame = new StackFrame(2); // once for the harmony patch wrapper and once for the method itself
                 PipLib.Logger.Debug("Trying to patch from HarmonyInstance with ID: {0} (frame +2: {1}.{2})", __instance.Id, frame.GetMethod().ReflectedType.Name, frame.GetMethod().Name);
-                if (__instance.Id == "OxygenNotIncluded_v0.1" && frame.GetMethod().Name == "LoadDLLs")
+                if (__instance.Id == "OxygenNotIncluded_v0.1" && frame.GetMethod().Name.StartsWith("LoadDLLs"))
                 {
                     PipLib.Logger.Verbose("Scanning assembly: {0}", assembly.GetName().Name);
                     ModManager.LoadTypes(assembly);
@@ -78,5 +81,49 @@ namespace PipLib.Mod
                 ModManager.Logger.Verbose("Loaded anim '{0}'", __result.name);
             }
         }
+
+        // TODO maybe make this an option?
+        #if DEBUG
+        [HarmonyPatch]
+        private static class Patch_DLLLoader_LoadDLLs
+        {
+            private static MethodBase TargetMethod()
+            {
+                // DLLLoader is a private class, because of course it is
+                var target = typeof(KMod.Mod).Assembly.GetType("KMod.DLLLoader", false)?.GetMethod("LoadDLLs", BindingFlags.Public | BindingFlags.Static);
+                if (target == null)
+                {
+                    Debug.LogWarning("Could not find DLLLoader.LoadDLLs to patch. Did Klei change something?");
+                }
+                return target;
+            }
+
+            private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> codeInstructions)
+            {
+                var instructions = new List<CodeInstruction>(codeInstructions);
+
+                for (var i = instructions.Count - 1; i > 0; i--)
+                {
+                    // start from the end and find where Klei eats the stupid exception
+                    if (instructions[i].opcode == OpCodes.Pop)
+                    {
+                        instructions[i].opcode = OpCodes.Call;
+                        instructions[i].operand = typeof(Patch_DLLLoader_LoadDLLs).GetMethod("HandleException", BindingFlags.Static | BindingFlags.NonPublic);
+                        break;
+                    }
+                }
+
+                return instructions;
+            }
+
+            private static void HandleException (object ex)
+            {
+                if (ex is Exception e)
+                {
+                    Debug.LogException(e);
+                }
+            }
+        }
+        #endif
     }
 }

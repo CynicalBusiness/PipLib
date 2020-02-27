@@ -74,7 +74,7 @@ namespace PipLib.Building
             return false;
         }
 
-        [PipMod.TypeCollector(typeof(IBuildingConfig))]
+        [PipMod.TypeCollector(typeof(IBuildingConfig), CaptureNonPipTypes = true)]
         internal static void CollectBuildingInfo (Type type)
         {
             var attrsTech = (BuildingInfo.TechRequirement[])type.GetCustomAttributes(typeof(BuildingInfo.TechRequirement), true);
