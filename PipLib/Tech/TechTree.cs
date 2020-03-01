@@ -217,6 +217,11 @@ namespace PipLib.Tech
             // calculate row nums
             foreach (var tech in Techs.resources)
             {
+                if (tech.unlockedItems.Count == 0)
+                {
+                    Logger.Warning("Tech by ID `{0}` has no unlocked items. This will likely cause an error and the tech will not render on the tree.");
+                }
+
                 if (tech.requiredTech.Count == 0 && !techRows.ContainsKey(tech.Id))
                 {
                     techRowTitles.Add(techRowNum, tech.Id);
