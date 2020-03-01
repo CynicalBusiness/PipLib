@@ -23,7 +23,7 @@ namespace PipLib.Mod
 
                 var frame = new StackFrame(2); // once for the harmony patch wrapper and once for the method itself
                 PipLib.Logger.Debug("Trying to patch from HarmonyInstance with ID: {0} (frame +2: {1}.{2})", __instance.Id, frame.GetMethod().ReflectedType.Name, frame.GetMethod().Name);
-                if (__instance.Id == "OxygenNotIncluded_v0.1" && frame.GetMethod().Name.StartsWith("LoadDLLs"))
+                if (frame.GetMethod().Name.StartsWith("LoadDLLs"))
                 {
                     PipLib.Logger.Verbose("Scanning assembly: {0}", assembly.GetName().Name);
                     ModManager.LoadTypes(assembly);
