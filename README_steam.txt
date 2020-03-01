@@ -20,7 +20,7 @@ PipLib, on its own, does not do much to change up the game (there are some thoug
   [/list]
 [*][b]Utilities for Buildings and Tags[/b]
   [list]
-  [*] Utiltiy methods for buildings, such as adding to plan screens and techs.
+  [*] Utility methods for buildings, such as adding to plan screens and techs.
   [*] Ability to easily augment tags, both custom and vanilla.
   [/list]
 [/list]
@@ -37,6 +37,7 @@ PipLib does make some minor changes to the game to facilitate new things.
 [h1]Usage[/h1]
 To learn how to create mods using PipLib, you can either read through the documentation located on each method or view some examples over on [url=https://lab.vevox.io/games/oxygen-not-included/matts-mods]my other mods[/url]. Many of these mods are excellent examples of how to use PipLib and different aspects of it.
 
+Steam versions are unlisted but are available on the workshop [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1880615893]here[/url].
 You can find both non-Steam mod versions as well as the release DLL/XML on the [url=https://lab.vevox.io/games/oxygen-not-included/piplib/-/tags]GitLab[/url].
 
 [b]Do not[/b] pack PipLib with your mod: this [i]will[/i] break things!. Instead, upload your mod by itself to the workshop, then use the [b]Add/Remove Required Items[/b] option when editing the item.
