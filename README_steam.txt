@@ -35,14 +35,14 @@ PipLib does make some minor changes to the game to facilitate new things.
 
 
 [h1]Usage[/h1]
-To learn how to create mods using PipLib, take a look at the examples located in [url=https://lab.vevox.io/games/oxygen-not-included/piplib/tree/master/ExampleMod]ExampleMod[/url], namely [b]ExampleMod.cs[/b] and [b]Examplemod.csproj[/b].
+To learn how to create mods using PipLib, you can either read through the documentation located on each method or view some examples over on [url=https://lab.vevox.io/games/oxygen-not-included/matts-mods]my other mods[/url]. Many of these mods are excellent examples of how to use PipLib and different aspects of it.
 
 You can find both non-Steam mod versions as well as the release DLL/XML on the [url=https://lab.vevox.io/games/oxygen-not-included/piplib/-/tags]GitLab[/url].
 
 [b]Do not[/b] pack PipLib with your mod: this [i]will[/i] break things!. Instead, upload your mod by itself to the workshop, then use the [b]Add/Remove Required Items[/b] option when editing the item.
 
 [h1]Contributing[/h1]
-[i]Please bear in mind when contributing: this project was designed to work in Visual Studio Code [b]>=1.38[/b], not Visual Studio.[/i]
+[i]Please bear in mind when contributing: this project was designed to work in Visual Studio Code [b]>=1.38[/b] (with OmniSharp), not Visual Studio. Attempting to build or edit this project in VS will fail and any PRs will be rejected.[/i]
 
 If you have a suggestion, feel free to submit an issue, fork, or contact me on Discord (see below). Contribution guidelines will appear when submitting an issue.
 Source code and issue tracking can be found on my [url=https://lab.vevox.io/games/oxygen-not-included/piplib]GitLab[/url].
