@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipLib", "PipLib\PipLib.csproj", "{37F52272-F162-40A1-BA1F-681D21420A45}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipLibStub", "PipLibStub\PipLibStub.csproj", "{4697851B-C8A3-47DC-9665-B61EF7DB1530}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipLibStub.Inject", "PipLibStub.Inject\PipLibStub.Inject.csproj", "{6F4C7C0A-1C4A-41B7-9871-55D72B792A9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{37F52272-F162-40A1-BA1F-681D21420A45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37F52272-F162-40A1-BA1F-681D21420A45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37F52272-F162-40A1-BA1F-681D21420A45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4697851B-C8A3-47DC-9665-B61EF7DB1530}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4697851B-C8A3-47DC-9665-B61EF7DB1530}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4697851B-C8A3-47DC-9665-B61EF7DB1530}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4697851B-C8A3-47DC-9665-B61EF7DB1530}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F4C7C0A-1C4A-41B7-9871-55D72B792A9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F4C7C0A-1C4A-41B7-9871-55D72B792A9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F4C7C0A-1C4A-41B7-9871-55D72B792A9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F4C7C0A-1C4A-41B7-9871-55D72B792A9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
