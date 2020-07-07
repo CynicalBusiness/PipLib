@@ -219,7 +219,7 @@ namespace PipLib.Tech
             {
                 if (tech.unlockedItems.Count == 0)
                 {
-                    Logger.Warning("Tech by ID `{0}` has no unlocked items. This will likely cause an error and the tech will not render on the tree.");
+                    Logger.Warning("Tech by ID `{0}` has no unlocked items. This will likely cause an error and the tech will not render on the tree.", tech.Id);
                 }
 
                 if (tech.requiredTech.Count == 0 && !techRows.ContainsKey(tech.Id))
