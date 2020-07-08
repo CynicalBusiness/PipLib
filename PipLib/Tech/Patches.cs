@@ -15,11 +15,10 @@ namespace PipLib.Tech
             }
         }
 
-        [HarmonyPatch(typeof(Db), "Initialize")]
-        private static class PatchLate_Db_Initialize
+        [HarmonyPatch(typeof(GeneratedBuildings), "LoadGeneratedBuildings")]
+        private static class Patch_GeneratedBuildings_LoadGeneratedBuildings
         {
-            [HarmonyPriority(Priority.VeryLow)]
-            private static void Postfix (Db __instance)
+            private static void Postfix ()
             {
                 TechTree.Instance.RebuildArragement();
             }

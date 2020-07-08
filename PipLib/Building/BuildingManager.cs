@@ -90,7 +90,7 @@ namespace PipLib.Building
             }
         }
 
-        [PipMod.OnStep(PipMod.Step.PostInitialize)]
+        [PipMod.OnStep(PipMod.Step.Initialize)]
         internal static void Initialize ()
         {
             foreach (var tech in wantedTech)

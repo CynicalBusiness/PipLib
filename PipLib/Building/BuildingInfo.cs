@@ -19,6 +19,7 @@ namespace PipLib.Building
         /// <summary>
         /// Marks a building as requiring a specific tech
         /// </summary>
+        [AttributeUsage(AttributeTargets.Class)]
         public sealed class TechRequirement : Attr
         {
             public string Tech { get; private set; }
